@@ -37,7 +37,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_LOCATION AS
             RAISE_APPLICATION_ERROR(-20001, 'Location already exists');
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);        
-    END;
+    END Proc_Insert_LOCATION;
 
     PROCEDURE Proc_Update_LOCATION(
         ip_location_id IN NUMBER,
@@ -52,7 +52,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_LOCATION AS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);        
-    END;
+    END Proc_Update_LOCATION;
 
     PROCEDURE Proc_Get_All_LOCATION(
         Op_location OUT SYS_REFCURSOR
@@ -67,7 +67,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_LOCATION AS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);        
-    END;
+    END Proc_Get_All_LOCATION;
 
     PROCEDURE Proc_Get_LOCATION_BY_ID(
         ip_location_id IN NUMBER,
@@ -85,6 +85,6 @@ CREATE OR REPLACE PACKAGE BODY PCK_LOCATION AS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);        
-    END;
+    END Proc_Get_LOCATION_BY_ID;
 
 END PCK_LOCATION;
