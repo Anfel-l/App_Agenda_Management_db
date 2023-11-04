@@ -1,144 +1,93 @@
 CREATE OR REPLACE PACKAGE PCK_SYMPTOM IS
-    /*******************************************************************************
-    Description: Package for data manipulation of the table SYMPTOM
-    Author: Andrés Felipe Lugo Rodríguez
-    Date: 17/10/2023
-    @copyright: Seguros Bolívar
-    *******************************************************************************/
 
-    /* Data types declaration */
-
-    SUBTYPE tyrcSYMPTOM IS SYMPTOM%ROWTYPE;
-    TYPE tytbSYMPTOM IS TABLE OF tyrcSYMPTOM INDEX BY BINARY_INTEGER;
-
-    /* Variables declaration */
-
-    /* Procedures and function declaration*/
-
-    /*******************************************************************************
-    Description: Procedure that inserts information in the table SYMPTOM
-    Author: Andrés Felipe Lugo Rodríguez
-    Date: 17/10/2023
-    @copyright: Seguros Bolívar
-    *******************************************************************************/
-    PROCEDURE Proc_Insert_SYMPTOM (
-        IOp_SYMPTOM IN OUT NOCOPY tyrcSYMPTOM
+    PROCEDURE Proc_Insert_SYMPTOM(
+        p_symptom_name IN VARCHAR2,
+        p_symptom_priority IN NUMBER
     );
 
-    /*******************************************************************************
-    Description: Procedure that gets all the information of the table SYMPTOM
-    Author: Andrés Felipe Lugo Rodríguez
-    Date: 17/10/2023
-    @copyright: Seguros Bolívar
-    *******************************************************************************/
-    PROCEDURE Proc_Get_All_SYMPTOM (
-        Op_SYMPTOM OUT NOCOPY tytbSYMPTOM
+    PROCEDURE Proc_Update_SYMPTOM(
+        p_symptom_id IN NUMBER,
+        p_symptom_name IN VARCHAR2,
+        p_symptom_priority IN NUMBER
     );
 
-    /*******************************************************************************
-    Description: Procedure that gets information of the table SYMPTOM by id
-    Author: Andrés Felipe Lugo Rodríguez
-    Date: 17/10/2023
-    @copyright: Seguros Bolívar
-    *******************************************************************************/
-    PROCEDURE Proc_Get_SYMPTOM (
-        Ip_Id in NUMBER,
-        Op_SYMPTOM OUT NOCOPY tyrcSYMPTOM
+    PROCEDURE Proc_Get_All_SYMPTOM(
+        p_symptom OUT SYS_REFCURSOR
     );
 
-    /*******************************************************************************
-    Description: Procedure that updates information of the table SYMPTOM
-    Author: Andrés Felipe Lugo Rodríguez
-    Date: 17/10/2023
-    @copyright: Seguros Bolívar
-    *******************************************************************************/
-    PROCEDURE Proc_Update_SYMPTOM (
-        IOp_SYMPTOM IN OUT NOCOPY tyrcSYMPTOM
+    PROCEDURE Proc_Get_SYMPTOM_BY_ID(
+        p_symptom_id IN NUMBER,
+        p_symptom OUT SYS_REFCURSOR
     );
 
 END PCK_SYMPTOM;
 
-CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM AS
+CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM IS
 
-    /* Insert Procedure */
-    PROCEDURE Proc_Insert_SYMPTOM (IOp_SYMPTOM IN OUT NOCOPY tyrcSYMPTOM) IS
-        BEGIN
-
-            /* Initialazing values */
-            IOp_SYMPTOM.SYMPTOM_id := SEQ_SYMPTOM.NEXTVAL;
-
-            /* Inserting a register */
-            INSERT INTO SYMPTOM VALUES /*+PCK_SYMPTOM*/ IOp_SYMPTOM;
-
-        /* Trowing Exception */
-        EXCEPTION
-            WHEN DUP_VAL_ON_INDEX THEN
-                RAISE_APPLICATION_ERROR(-20000, 'Error: Duplicated value on [PCK_SYMPTOM.Proc_Insert_SYMPTOM]');
-            WHEN OTHERS THEN
-                RAISE_APPLICATION_ERROR(-20001, SQLCODE || ' => ' || SQLERRM);
+    PROCEDURE Proc_Insert_SYMPTOM(
+        p_symptom_name IN VARCHAR2,
+        p_symptom_priority IN NUMBER
+    ) IS
+    v_symptom_id NUMBER;
+    BEGIN
+        v_symptom_id := SEQ_SYMPTOM.NEXTVAL;
+        INSERT INTO SYMPTOM (symptom_id, symptom_name, symptom_priority)
+        VALUES (v_symptom_id, p_symptom_name, p_symptom_priority);
+    EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Symptom already exists');
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
     END Proc_Insert_SYMPTOM;
 
-    /* Get All Information Procedure */
-    PROCEDURE Proc_Get_All_SYMPTOM (Op_SYMPTOM OUT NOCOPY tytbSYMPTOM) IS
-        CURSOR cur_SYMPTOM IS
-            SELECT
-                SYMPTOM_id,
-                SYMPTOM_name,
-                SYMPTOM_priority
-            FROM SYMPTOM;
-                idx BINARY_INTEGER := 1;
-        BEGIN
-            FOR rec IN cur_SYMPTOM LOOP
-                Op_SYMPTOM(idx) := rec;
-                idx := idx + 1;
-            END LOOP;
 
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN 
-	            RAISE_APPLICATION_ERROR(-20150, 'Error: No results were found [PCK_SYMPTOM.Proc_Get_SYMPTOM]');
-	        WHEN OTHERS THEN
-	            RAISE_APPLICATION_ERROR(-20199, SQLCODE || ' => ' || SQLERRM);
-
-    END Proc_Get_All_SYMPTOM;
-
-    /* Get Information by Id Procedure */
-    PROCEDURE Proc_Get_SYMPTOM (Ip_Id in NUMBER, Op_SYMPTOM OUT NOCOPY tyrcSYMPTOM) IS
-        CURSOR cur_SYMPTOM IS
-            SELECT
-                SYMPTOM_id,
-                SYMPTOM_name,
-                SYMPTOM_priority
-            FROM SYMPTOM
-            WHERE /*+PCK_SYMPTOM.Proc_Get_SYMPTOM*/ SYMPTOM_id = Ip_Id;          
-        BEGIN
-            OPEN cur_SYMPTOM;
-            FETCH cur_SYMPTOM INTO Op_SYMPTOM;
-            CLOSE cur_SYMPTOM;
-
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN 
-	            RAISE_APPLICATION_ERROR(-20150, 'Error: No results were found [PCK_SYMPTOM.Proc_Get_SYMPTOM]');
-	        WHEN OTHERS THEN
-	            RAISE_APPLICATION_ERROR(-20199, SQLCODE || ' => ' || SQLERRM);
-
-    END Proc_Get_SYMPTOM;
-
-    /* Update Information Procedure */
-    PROCEDURE Proc_Update_SYMPTOM (IOp_SYMPTOM IN OUT NOCOPY tyrcSYMPTOM) IS
-        /* Declaring variable for update */
-            v_updated_record tyrcSYMPTOM;
-        BEGIN
-				UPDATE SYMPTOM
-				SET
-				    SYMPTOM_name = IOp_SYMPTOM.SYMPTOM_name,
-				    SYMPTOM_priority = IOp_SYMPTOM.SYMPTOM_priority
-				WHERE /*+PCK_SYMPTOM.Proc_Update_SYMPTOM*/ SYMPTOM_id = IOp_SYMPTOM.SYMPTOM_id;    
-                Proc_Get_SYMPTOM(IOp_SYMPTOM.SYMPTOM_id, v_updated_record);
-                IOp_SYMPTOM := v_updated_record;
-
-        EXCEPTION
-            WHEN OTHERS THEN
-                RAISE_APPLICATION_ERROR(-20199, SQLCODE || ' => ' || SQLERRM);
+    PROCEDURE Proc_Update_SYMPTOM(
+        p_symptom_id IN NUMBER,
+        p_symptom_name IN VARCHAR2,
+        p_symptom_priority IN NUMBER
+    ) IS
+    BEGIN
+        UPDATE SYMPTOM
+        SET symptom_name = p_symptom_name,
+            symptom_priority = p_symptom_priority
+        WHERE symptom_id = p_symptom_id;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20003, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
     END Proc_Update_SYMPTOM;
 
+
+    PROCEDURE Proc_Get_All_SYMPTOM(
+        p_symptom OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        OPEN p_symptom FOR
+        SELECT 
+            symptom_id, 
+            symptom_name, 
+            symptom_priority
+        FROM SYMPTOM;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20004, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+    END Proc_Get_All_SYMPTOM;
+
+
+    PROCEDURE Proc_Get_SYMPTOM_BY_ID(
+        p_symptom_id IN NUMBER,
+        p_symptom OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        OPEN p_symptom FOR
+        SELECT 
+            symptom_id, 
+            symptom_name, 
+            symptom_priority
+        FROM SYMPTOM
+        WHERE symptom_id = p_symptom_id;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+    END Proc_Get_SYMPTOM_BY_ID;
+    
 END PCK_SYMPTOM;
