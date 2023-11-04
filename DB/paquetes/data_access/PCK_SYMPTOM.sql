@@ -1,23 +1,23 @@
 CREATE OR REPLACE PACKAGE PCK_SYMPTOM IS
 
     PROCEDURE Proc_Insert_SYMPTOM(
-        p_symptom_name IN VARCHAR2,
-        p_symptom_priority IN NUMBER
+        Ip_symptom_name IN VARCHAR2,
+        Ip_symptom_priority IN NUMBER
     );
 
     PROCEDURE Proc_Update_SYMPTOM(
-        p_symptom_id IN NUMBER,
-        p_symptom_name IN VARCHAR2,
-        p_symptom_priority IN NUMBER
+        Ip_symptom_id IN NUMBER,
+        Ip_symptom_name IN VARCHAR2,
+        Ip_symptom_priority IN NUMBER
     );
 
     PROCEDURE Proc_Get_All_SYMPTOM(
-        p_symptom OUT SYS_REFCURSOR
+        Op_symptom OUT SYS_REFCURSOR
     );
 
     PROCEDURE Proc_Get_SYMPTOM_BY_ID(
-        p_symptom_id IN NUMBER,
-        p_symptom OUT SYS_REFCURSOR
+        Ip_symptom_id IN NUMBER,
+        Op_symptom OUT SYS_REFCURSOR
     );
 
 END PCK_SYMPTOM;
@@ -25,14 +25,14 @@ END PCK_SYMPTOM;
 CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM IS
 
     PROCEDURE Proc_Insert_SYMPTOM(
-        p_symptom_name IN VARCHAR2,
-        p_symptom_priority IN NUMBER
+        Ip_symptom_name IN VARCHAR2,
+        Ip_symptom_priority IN NUMBER
     ) IS
     v_symptom_id NUMBER;
     BEGIN
         v_symptom_id := SEQ_SYMPTOM.NEXTVAL;
         INSERT INTO SYMPTOM (symptom_id, symptom_name, symptom_priority)
-        VALUES (v_symptom_id, p_symptom_name, p_symptom_priority);
+        VALUES (v_symptom_id, Ip_symptom_name, Ip_symptom_priority);
     EXCEPTION
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Symptom already exists');
@@ -42,15 +42,15 @@ CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM IS
 
 
     PROCEDURE Proc_Update_SYMPTOM(
-        p_symptom_id IN NUMBER,
-        p_symptom_name IN VARCHAR2,
-        p_symptom_priority IN NUMBER
+        Ip_symptom_id IN NUMBER,
+        Ip_symptom_name IN VARCHAR2,
+        Ip_symptom_priority IN NUMBER
     ) IS
     BEGIN
         UPDATE SYMPTOM
-        SET symptom_name = p_symptom_name,
-            symptom_priority = p_symptom_priority
-        WHERE symptom_id = p_symptom_id;
+        SET symptom_name = Ip_symptom_name,
+            symptom_priority = Ip_symptom_priority
+        WHERE symptom_id = Ip_symptom_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20003, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
@@ -58,10 +58,10 @@ CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM IS
 
 
     PROCEDURE Proc_Get_All_SYMPTOM(
-        p_symptom OUT SYS_REFCURSOR
+        Op_symptom OUT SYS_REFCURSOR
     ) IS
     BEGIN
-        OPEN p_symptom FOR
+        OPEN Op_symptom FOR
         SELECT 
             symptom_id, 
             symptom_name, 
@@ -74,17 +74,17 @@ CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM IS
 
 
     PROCEDURE Proc_Get_SYMPTOM_BY_ID(
-        p_symptom_id IN NUMBER,
-        p_symptom OUT SYS_REFCURSOR
+        Ip_symptom_id IN NUMBER,
+        Op_symptom OUT SYS_REFCURSOR
     ) IS
     BEGIN
-        OPEN p_symptom FOR
+        OPEN Op_symptom FOR
         SELECT 
             symptom_id, 
             symptom_name, 
             symptom_priority
         FROM SYMPTOM
-        WHERE symptom_id = p_symptom_id;
+        WHERE symptom_id = Ip_symptom_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);

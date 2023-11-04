@@ -1,57 +1,57 @@
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_USER IS
 
     PROCEDURE Proc_Insert_MEDICAL_USER (
-        p_first_name         IN  VARCHAR2,
-        p_second_name        IN  VARCHAR2,
-        p_last_name          IN  VARCHAR2,
-        p_document_type_id   IN  NUMBER,
-        p_document           IN  VARCHAR2,
-        p_password           IN  VARCHAR2,
-        p_contract_type_id   IN  NUMBER,
-        p_location_id        IN  NUMBER,
-        p_email              IN  VARCHAR2
+        Ip_first_name         IN  VARCHAR2,
+        Ip_second_name        IN  VARCHAR2,
+        Ip_last_name          IN  VARCHAR2,
+        Ip_document_type_id   IN  NUMBER,
+        Ip_document           IN  VARCHAR2,
+        Ip_password           IN  VARCHAR2,
+        Ip_contract_type_id   IN  NUMBER,
+        Ip_location_id        IN  NUMBER,
+        Ip_email              IN  VARCHAR2
     );
 
     PROCEDURE Proc_Get_All_MEDICAL_USER (
-        p_medical_users OUT SYS_REFCURSOR
+        Op_medical_users OUT SYS_REFCURSOR
     );
 
     PROCEDURE Proc_Get_MEDICAL_USER_BY_ID (
-        p_user_id       IN NUMBER,
-        p_medical_user  OUT SYS_REFCURSOR
+        Ip_user_id       IN NUMBER,
+        Op_medical_user  OUT SYS_REFCURSOR
     );
 
     PROCEDURE Proc_Get_MEDICAL_USER_BY_DOCUMENT (
-        p_document      IN  VARCHAR2,
-        p_medical_user  OUT SYS_REFCURSOR
+        Ip_document      IN  VARCHAR2,
+        Op_medical_user  OUT SYS_REFCURSOR
     );
 
     PROCEDURE Proc_Update_MEDICAL_USER (
-        p_user_id            IN  NUMBER,
-        p_first_name         IN  VARCHAR2,
-        p_second_name        IN  VARCHAR2,
-        p_last_name          IN  VARCHAR2,
-        p_document_type_id   IN  NUMBER,
-        p_document           IN  VARCHAR2,
-        p_password           IN  VARCHAR2,
-        p_contract_type_id   IN  NUMBER,
-        p_location_id        IN  NUMBER,
-        p_email              IN  VARCHAR2
+        Ip_user_id            IN  NUMBER,
+        Ip_first_name         IN  VARCHAR2,
+        Ip_second_name        IN  VARCHAR2,
+        Ip_last_name          IN  VARCHAR2,
+        Ip_document_type_id   IN  NUMBER,
+        Ip_document           IN  VARCHAR2,
+        Ip_password           IN  VARCHAR2,
+        Ip_contract_type_id   IN  NUMBER,
+        Ip_location_id        IN  NUMBER,
+        Ip_email              IN  VARCHAR2
     );
 
 END PCK_MEDICAL_USER;
 CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
 
     PROCEDURE Proc_Insert_MEDICAL_USER (
-        p_first_name         IN  VARCHAR2,
-        p_second_name        IN  VARCHAR2,
-        p_last_name          IN  VARCHAR2,
-        p_document_type_id   IN  NUMBER,
-        p_document           IN  VARCHAR2,
-        p_password           IN  VARCHAR2,
-        p_contract_type_id   IN  NUMBER,
-        p_location_id        IN  NUMBER,
-        p_email              IN  VARCHAR2
+        Ip_first_name         IN  VARCHAR2,
+        Ip_second_name        IN  VARCHAR2,
+        Ip_last_name          IN  VARCHAR2,
+        Ip_document_type_id   IN  NUMBER,
+        Ip_document           IN  VARCHAR2,
+        Ip_password           IN  VARCHAR2,
+        Ip_contract_type_id   IN  NUMBER,
+        Ip_location_id        IN  NUMBER,
+        Ip_email              IN  VARCHAR2
     ) IS
     
     v_user_id NUMBER;
@@ -60,7 +60,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
 	    v_user_id := SEQ_MEDICAL_USER.NEXTVAL;
 	   
         INSERT INTO MEDICAL_USER (user_id, first_name, second_name, last_name, document_type_id, document, password, contract_type_id, location_id, email)
-        VALUES (v_user_id, p_first_name, p_second_name, p_last_name, p_document_type_id, p_document, p_password, p_contract_type_id, p_location_id, p_email);
+        VALUES (v_user_id, Ip_first_name, Ip_second_name, Ip_last_name, Ip_document_type_id, Ip_document, Ip_password, Ip_contract_type_id, Ip_location_id, Ip_email);
     EXCEPTION
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20000, 'Error: Duplicated value on insert');
@@ -68,9 +68,9 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
             RAISE;
     END Proc_Insert_MEDICAL_USER;
 
-    PROCEDURE Proc_Get_All_MEDICAL_USER (p_medical_users OUT SYS_REFCURSOR) IS
+    PROCEDURE Proc_Get_All_MEDICAL_USER (Op_medical_users OUT SYS_REFCURSOR) IS
     BEGIN
-        OPEN p_medical_users FOR
+        OPEN Op_medical_users FOR
         SELECT
             user_id,
         	first_name,
@@ -86,11 +86,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
     END Proc_Get_All_MEDICAL_USER;
 
     PROCEDURE Proc_Get_MEDICAL_USER_BY_ID (
-        p_user_id       IN  NUMBER,
-        p_medical_user  OUT SYS_REFCURSOR
+        Ip_user_id       IN  NUMBER,
+        Op_medical_user  OUT SYS_REFCURSOR
     ) IS
     BEGIN
-        OPEN p_medical_user FOR
+        OPEN Op_medical_user FOR
         SELECT
             user_id,
         	first_name,
@@ -102,15 +102,15 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
             contract_type_id,
             location_id,
             email
-       	FROM MEDICAL_USER WHERE user_id = p_user_id;
+       	FROM MEDICAL_USER WHERE user_id = Ip_user_id;
     END Proc_Get_MEDICAL_USER_BY_ID;
 
     PROCEDURE Proc_Get_MEDICAL_USER_BY_DOCUMENT (
-        p_document      IN  VARCHAR2,
-        p_medical_user  OUT SYS_REFCURSOR
+        Ip_document      IN  VARCHAR2,
+        Op_medical_user  OUT SYS_REFCURSOR
     ) IS
     BEGIN
-        OPEN p_medical_user FOR
+        OPEN Op_medical_user FOR
         SELECT
         	user_id,
         	first_name,
@@ -122,33 +122,33 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
             contract_type_id,
             location_id,
             email
-        FROM MEDICAL_USER WHERE document = p_document;
+        FROM MEDICAL_USER WHERE document = Ip_document;
     END Proc_Get_MEDICAL_USER_BY_DOCUMENT;
 
     PROCEDURE Proc_Update_MEDICAL_USER (
-        p_user_id            IN  NUMBER,
-        p_first_name         IN  VARCHAR2,
-        p_second_name        IN  VARCHAR2,
-        p_last_name          IN  VARCHAR2,
-        p_document_type_id   IN  NUMBER,
-        p_document           IN  VARCHAR2,
-        p_password           IN  VARCHAR2,
-        p_contract_type_id   IN  NUMBER,
-        p_location_id        IN  NUMBER,
-        p_email              IN  VARCHAR2
+        Ip_user_id            IN  NUMBER,
+        Ip_first_name         IN  VARCHAR2,
+        Ip_second_name        IN  VARCHAR2,
+        Ip_last_name          IN  VARCHAR2,
+        Ip_document_type_id   IN  NUMBER,
+        Ip_document           IN  VARCHAR2,
+        Ip_password           IN  VARCHAR2,
+        Ip_contract_type_id   IN  NUMBER,
+        Ip_location_id        IN  NUMBER,
+        Ip_email              IN  VARCHAR2
     ) IS
     BEGIN
         UPDATE MEDICAL_USER
-        SET first_name = p_first_name,
-            second_name = p_second_name,
-            last_name = p_last_name,
-            document_type_id = p_document_type_id,
-            document = p_document,
-            password = p_password,
-            contract_type_id = p_contract_type_id,
-            location_id = p_location_id,
-            email = p_email
-        WHERE user_id = p_user_id;
+        SET first_name = Ip_first_name,
+            second_name = Ip_second_name,
+            last_name = Ip_last_name,
+            document_type_id = Ip_document_type_id,
+            document = Ip_document,
+            password = Ip_password,
+            contract_type_id = Ip_contract_type_id,
+            location_id = Ip_location_id,
+            email = Ip_email
+        WHERE user_id = Ip_user_id;
     EXCEPTION
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20000, 'Error: Duplicated value on update');
