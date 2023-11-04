@@ -32,6 +32,8 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT_STATUS AS
     VALUES(v_medical_appointment_status_id, Ip_status);
 
     EXCEPTION
+            WHEN DUP_VAL_ON_INDEX THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Status already exists');
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' - Error - '||SQLERRM);
     END Proc_Insert_MEDICAL_APPOINTMENT_STATUS;
