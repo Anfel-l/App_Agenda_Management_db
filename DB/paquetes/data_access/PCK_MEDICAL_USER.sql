@@ -1,5 +1,4 @@
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_USER IS
-    /* Procedures and function declaration*/
 
     PROCEDURE Proc_Insert_MEDICAL_USER (
         p_first_name         IN  VARCHAR2,
