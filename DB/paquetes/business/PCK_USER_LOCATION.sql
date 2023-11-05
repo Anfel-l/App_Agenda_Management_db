@@ -16,7 +16,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_USER_LOCATION AS
         v_user_location SYS_REFCURSOR;
     BEGIN
         -- Obtener la ubicación del usuario
-        PCK_MEDICAL_USER.Proc_Get_MEDICAL_USER_ID(Ip_User_Id, v_user_location);
+        PCK_MEDICAL_USER.Proc_Get_MEDICAL_USER_BY_ID(Ip_User_Id, v_user_location);
         
         -- Obtener centros médicos basados en la ubicación del usuario
         PCK_MEDICAL_CENTER.Proc_Get_MEDICAL_CENTER_BY_LOCATION(v_user_location.location_id, Op_MEDICAL_CENTERS);
