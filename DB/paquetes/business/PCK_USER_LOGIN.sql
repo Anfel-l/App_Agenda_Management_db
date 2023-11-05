@@ -1,17 +1,5 @@
 CREATE OR REPLACE PACKAGE PCK_USER_LOGIN IS
-    /*******************************************************************************
-    Description: Package for data manipulation of the table APPOINMENT_FEE
-    Author: Andrés Felipe Lugo Rodríguez
-    Date: 23/10/2023
-    @copyright: Seguros Bolívar
-    *******************************************************************************/
 
-    /*******************************************************************************
-    Description: Procedure to validate the user credentials
-    Author: Andrés Felipe Lugo Rodríguez
-    Date: 23/10/2023
-    @copyright: Seguros Bolívar
-    *******************************************************************************/
     PROCEDURE Proc_User_Login(
         Ip_Document IN VARCHAR2,
         Ip_Password IN VARCHAR2,
