@@ -26,8 +26,8 @@ CREATE OR REPLACE PACKAGE BODY PCK_APPOINTMENT_DETAILS IS
         Ip_SymptomId IN NUMBER,
         Op_Priority OUT NUMBER
     ) IS
-        v_contract_type_record PCK_CONTRACT_TYPE.tyrcCONTRACT_TYPE;
-        v_symptom_record PCK_SYMPTOM.tyrcSYMPTOM;
+        v_contract_type_record SYS_REFCURSOR;
+        v_symptom_record SYS_REFCURSOR;
     BEGIN
         -- Get the contract type details
         PCK_CONTRACT_TYPE.Proc_Get_CONTRACT_TYPE(Ip_ContractTypeId, v_contract_type_record);

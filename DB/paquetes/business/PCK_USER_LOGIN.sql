@@ -3,26 +3,24 @@ CREATE OR REPLACE PACKAGE PCK_USER_LOGIN IS
     PROCEDURE Proc_User_Login(
         Ip_Document IN VARCHAR2,
         Ip_Password IN VARCHAR2,
-        Op_UserId OUT NUMBER,
-        Op_Result OUT VARCHAR2
+        Op_UserId OUT NUMBER
     );
 
 END PCK_USER_LOGIN;
 
 CREATE OR REPLACE PACKAGE BODY PCK_USER_LOGIN IS
 
-    PROCEDURE Proc_User_Login(Ip_Document IN VARCHAR2, Ip_Password IN VARCHAR2, Op_UserId OUT NUMBER, Op_Result OUT VARCHAR2) IS
-        v_user_record PCK_MEDICAL_USER.tyrcMEDICAL_USER;
+    PROCEDURE Proc_User_Login(
+        Ip_Document IN VARCHAR2, 
+        Ip_Password IN VARCHAR2, 
+        Op_UserId OUT NUMBER
+    )IS
+        v_user_record SYS_REFCURSOR;
     BEGIN
-        -- Use the PCK_MEDICAL_USER package to get the user details by document number
         PCK_MEDICAL_USER.Proc_Get_MEDICAL_USER_DOCUMENT(Ip_Document, v_user_record);
-
-        -- Validate the provided password against the retrieved user details
         IF v_user_record.password = Ip_Password THEN
             Op_UserId := v_user_record.user_id;
-            Op_Result := 'Login Successful';
         ELSE
-            Op_Result := 'Invalid Credentials';
             Op_UserId := NULL;
         END IF;
     EXCEPTION
@@ -33,6 +31,5 @@ CREATE OR REPLACE PACKAGE BODY PCK_USER_LOGIN IS
             Op_Result := 'Error during login';
             Op_UserId := NULL;
     END Proc_User_Login;
-
 END PCK_USER_LOGIN;
 

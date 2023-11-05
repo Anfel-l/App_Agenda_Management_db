@@ -22,7 +22,7 @@ CREATE OR REPLACE PACKAGE PCK_DETAIL_ASSIGNMENT IS
         Ip_appointment_fee_id IN NUMBER,
         Ip_slot_time IN TIMESTAMP,
         Ip_doctor_id IN NUMBER,
-        Op_detail OUT PCK_MEDICAL_APPOINTMENT_DETAIL.tyrcMEDICAL_APPOINTMENT_DETAIL
+        Op_detail OUT SYS_REFCURSOR
     );
 
    
@@ -35,9 +35,9 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
         Ip_user_id IN NUMBER,
         Op_apppointment_fee_id OUT NOCOPY NUMBER
     ) IS
-        v_user_record PCK_MEDICAL_USER.tyrcMEDICAL_USER;
-        v_contract_type_record PCK_CONTRACT_TYPE.tyrcCONTRACT_TYPE;
-        v_appointment_fee PCK_APPOINTMENT_FEE.tyrcAPPOINTMENT_FEE;
+        v_user_record SYS_REFCURSOR;
+        v_contract_type_record SYS_REFCURSOR;
+        v_appointment_fee SYS_REFCURSOR;
     BEGIN
 
         PCK_MEDICAL_USER.Proc_Get_MEDICAL_USER_ID (Ip_user_id, v_user_record);
@@ -56,7 +56,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
         Ip_medical_appointment_id IN NUMBER,
         Op_priority_value OUT NOCOPY DECIMAL
     ) IS
-        v_medical_appointment_record PCK_MEDICAL_APPOINTMENT.tyrcMEDICAL_APPOINTMENT;
+        v_medical_appointment_record SYS_REFCURSOR;
     BEGIN
         PCK_MEDICAL_APPOINTMENT.Proc_Get_Medical_Appointment(Ip_medical_appointment_id, v_medical_appointment_record);  
         Op_priority_value := v_medical_appointment_record.medical_priority;
@@ -64,7 +64,6 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
     EXCEPTION WHEN NO_DATA_FOUND THEN
         Op_priority_value := NULL;
     END Proc_Validate_Priority;
-
 
 
     PROCEDURE Proc_Validate_Slot(
@@ -123,19 +122,17 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
         Ip_appointment_fee_id IN NUMBER,
         Ip_slot_time IN TIMESTAMP,
         Ip_doctor_id IN NUMBER,
-        Op_detail OUT PCK_MEDICAL_APPOINTMENT_DETAIL.tyrcMEDICAL_APPOINTMENT_DETAIL
+        Op_detail OUT SYS_REFCURSOR
     ) IS
-        v_detail PCK_MEDICAL_APPOINTMENT_DETAIL.tyrcMEDICAL_APPOINTMENT_DETAIL;
-        v_agenda PCK_DOCTOR_AGENDA.tyrcDOCTOR_AGENDA;
+        v_detail SYS_REFCURSOR;
+        v_agenda SYS_REFCURSOR;
     BEGIN
         v_detail.user_id := Ip_user_id;
         v_detail.medical_appointment_id := Ip_medical_appointment_id;
         v_detail.appointment_fee_id := Ip_appointment_fee_id;
-        v_detail.medical_appointment_status_id := 1; -- Confirmado de una vez para efectos prácticos
-        v_detail.appointment_time := Ip_slot_time;
+        v_detail.medical_appointment_status_id := 1; 
         v_detail.doctor_id := Ip_doctor_id;
-
-        -- Saving medical appointment information
+        
         PCK_MEDICAL_APPOINTMENT_DETAIL.Proc_Insert_Medical_Appointment_Detail(v_detail); 
 
         v_agenda.doctor_id := Ip_doctor_id;

@@ -1,7 +1,7 @@
 CREATE OR REPLACE PACKAGE PCK_AGENDA_BALANCE AS
 
     PROCEDURE Get_Doctor_Agenda(
-        Ip_Doctor_Ids IN PCK_DOCTOR.tytbDOCTOR,
+        Ip_Doctor_Ids IN SYS_REFCURSOR,
         Op_Doctor_Id OUT NUMBER,
         Op_Total_Appointments OUT NUMBER
     );
@@ -11,7 +11,7 @@ END PCK_AGENDA_BALANCE;
 CREATE OR REPLACE PACKAGE BODY PCK_AGENDA_BALANCE IS
 
      PROCEDURE Get_Doctor_Agenda(
-        Ip_Doctor_Ids IN PCK_DOCTOR.tytbDOCTOR,
+        Ip_Doctor_Ids IN SYS_REFCURSOR,
         Op_Doctor_Id OUT NUMBER,
         Op_Total_Appointments OUT NUMBER
     ) IS

@@ -1,9 +1,11 @@
 CREATE OR REPLACE PACKAGE PCK_DOCTOR_AVAILABILITY IS
+
     PROCEDURE Proc_Get_Doctors_By_Appointment(
         Ip_medical_appointment_id IN NUMBER,
         Ip_user_id IN NUMBER,
-        Op_DOCTORS OUT NOCOPY PCK_DOCTOR.tytbDOCTOR
+        Op_DOCTORS OUT SYS_REFCURSOR
     );
+
 END PCK_DOCTOR_AVAILABILITY;
 
 CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
@@ -11,10 +13,10 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
     PROCEDURE Proc_Get_Doctors_By_Appointment(
         Ip_medical_appointment_id IN NUMBER,
         Ip_user_id IN NUMBER,
-        Op_DOCTORS OUT NOCOPY PCK_DOCTOR.tytbDOCTOR
+        Op_DOCTORS OUT SYS_REFCURSOR
     ) IS
         v_medical_field_id NUMBER;
-        v_medical_center_ids PCK_MEDICAL_CENTER.tytbMEDICAL_CENTER;
+        v_medical_center_ids SYS_REFCURSOR;
         idx BINARY_INTEGER := 1;
         
         CURSOR cur_DOCTORS(v_field_id NUMBER) IS
@@ -30,15 +32,12 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
             AND medical_center_id IN (SELECT medical_center_id FROM TABLE(v_medical_center_ids));
 
     BEGIN
-        -- Obtener el medical_field_id basado en el medical_appointment_id
         SELECT medical_field_id INTO v_medical_field_id 
         FROM MEDICAL_APPOINTMENT 
         WHERE medical_appointment_id = Ip_medical_appointment_id;
 
-        -- Llenar la tabla de IDs de centros médicos basados en la ubicación del usuario
         PCK_USER_LOCATION.Proc_Get_Centers_By_User_Location(Ip_user_id, v_medical_center_ids);
         
-        -- Buscar doctores basados en el medical_field_id y centros médicos
         FOR rec IN cur_DOCTORS(v_medical_field_id) LOOP
             Op_DOCTORS(idx).doctor_id := rec.doctor_id;
             Op_DOCTORS(idx).first_name := rec.first_name;
