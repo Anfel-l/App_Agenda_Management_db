@@ -12,7 +12,7 @@ CREATE OR REPLACE PACKAGE PCK_DETAIL_ASSIGNMENT IS
 
     PROCEDURE Proc_Validate_Slot(
         Ip_doctor_id IN NUMBER,
-        Ip_priority IN DECIMAL, -- Cambiado a DECIMAL para manejar valores fraccionarios
+        Ip_priority IN DECIMAL,
         Op_slot_time OUT NOCOPY TIMESTAMP
     );
 
@@ -22,7 +22,7 @@ CREATE OR REPLACE PACKAGE PCK_DETAIL_ASSIGNMENT IS
         Ip_appointment_fee_id IN NUMBER,
         Ip_slot_time IN TIMESTAMP,
         Ip_doctor_id IN NUMBER,
-        Op_detail OUT SYS_REFCURSOR
+        Op_detail_id OUT NUMBER
     );
 
    
@@ -30,35 +30,47 @@ END PCK_DETAIL_ASSIGNMENT;
 
 CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
 
-    -- Check if the user has a contract type
     PROCEDURE Proc_Calculate_Cuota(
         Ip_user_id IN NUMBER,
         Op_apppointment_fee_id OUT NOCOPY NUMBER
     ) IS
-        v_user_record SYS_REFCURSOR;
-        v_contract_type_record SYS_REFCURSOR;
+        v_user_cursor SYS_REFCURSOR;
+        v_user_record MEDICAL_USER%ROWTYPE;
+
+        v_contract_type_cursor SYS_REFCURSOR;
+        v_contract_type_record CONTRACT_TYPE%ROWTYPE;
+
         v_appointment_fee SYS_REFCURSOR;
+        v_appointment_fee_record APPOINTMENT_FEE%ROWTYPE;
+
     BEGIN
 
-        PCK_MEDICAL_USER.Proc_Get_MEDICAL_USER_ID (Ip_user_id, v_user_record);
-        PCK_CONTRACT_TYPE.Proc_Get_CONTRACT_TYPE(v_user_record.contract_type_id, v_contract_type_record);
-        PCK_APPOINTMENT_FEE.Proc_Get_APPOINTMENT_FEE (v_contract_type_record.contract_type_id, v_appointment_fee);    
-        
-        Op_apppointment_fee_id := v_appointment_fee.appointment_fee_id;
+        PCK_MEDICAL_USER.Proc_Get_MEDICAL_USER_BY_ID (Ip_user_id, v_user_cursor);
+        FETCH v_user_cursor INTO v_user_record;
+
+        PCK_CONTRACT_TYPE.Proc_Get_CONTRACT_TYPE_BY_ID(v_user_record.contract_type_id, v_contract_type_cursor);
+        FETCH v_contract_type_cursor INTO v_contract_type_record;
+
+        PCK_APPOINTMENT_FEE.Proc_Get_APPOINTMENT_FEE_BY_CONTRACT_TYPE_ID(v_contract_type_record.contract_type_id, v_appointment_fee);    
+        FETCH v_appointment_fee INTO v_appointment_fee_record;
+
+        Op_apppointment_fee_id := v_appointment_fee_record.appointment_fee_id;
 
     EXCEPTION WHEN NO_DATA_FOUND THEN
         Op_apppointment_fee_id := NULL; 
     END Proc_Calculate_Cuota;
 
 
-    -- Check if the user has a contract type
     PROCEDURE Proc_Validate_Priority(
         Ip_medical_appointment_id IN NUMBER,
         Op_priority_value OUT NOCOPY DECIMAL
     ) IS
-        v_medical_appointment_record SYS_REFCURSOR;
+        v_medical_appointment_cursor SYS_REFCURSOR;
+        v_medical_appointment_record MEDICAL_APPOINTMENT%ROWTYPE;
     BEGIN
-        PCK_MEDICAL_APPOINTMENT.Proc_Get_Medical_Appointment(Ip_medical_appointment_id, v_medical_appointment_record);  
+        PCK_MEDICAL_APPOINTMENT.Proc_Get_MEDICAL_APPOINTMENT_BY_ID(Ip_medical_appointment_id, v_medical_appointment_cursor);
+        FETCH v_medical_appointment_cursor INTO v_medical_appointment_record;
+
         Op_priority_value := v_medical_appointment_record.medical_priority;
 
     EXCEPTION WHEN NO_DATA_FOUND THEN
@@ -68,19 +80,18 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
 
     PROCEDURE Proc_Validate_Slot(
         Ip_doctor_id IN NUMBER,
-        Ip_priority IN DECIMAL, -- Cambiado a DECIMAL para manejar valores fraccionarios
+        Ip_priority IN DECIMAL, 
         Op_slot_time OUT NOCOPY TIMESTAMP
     ) IS
-        -- Variable para almacenar el número de slots a saltar basado en la prioridad.
         v_priority_slots_offset NUMBER;
     BEGIN
-        -- Determinar el offset basado en el rango de prioridad.
-        IF Ip_priority BETWEEN 3 AND 2 THEN -- Prioridad Alta
-            v_priority_slots_offset := 0; -- No saltar ningún slot, tomar el primero
-        ELSIF Ip_priority < 2 AND Ip_priority >= 1.5 THEN -- Prioridad Media
-            v_priority_slots_offset := 1; -- Saltar 1 slot
-        ELSIF Ip_priority < 1.5 AND Ip_priority >= 1 THEN -- Prioridad Baja
-            v_priority_slots_offset := 2; -- Saltar 2 slots
+        
+        IF Ip_priority BETWEEN 3 AND 2 THEN
+            v_priority_slots_offset := 0; 
+        ELSIF Ip_priority < 2 AND Ip_priority >= 1.5 THEN
+            v_priority_slots_offset := 1;
+        ELSIF Ip_priority < 1.5 AND Ip_priority >= 1 THEN
+            v_priority_slots_offset := 2;
         ELSE
             RAISE_APPLICATION_ERROR(-20002, 'Valor de prioridad no está dentro de los rangos válidos.');
         END IF;
@@ -99,7 +110,6 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
                 CONNECT BY (ds.start_time + (level - 1) * INTERVAL '30' MINUTE) < ds.end_time
             )
 			WHERE start_time NOT IN (
-			    -- Subconsulta que se une con MEDICAL_APPOINTMENT_DETAIL para obtener los horarios de las citas
 			    SELECT mad.appointment_time
 			    FROM MED_USER_DBA.DOCTOR_AGENDA da
 			    JOIN MED_USER_DBA.MEDICAL_APPOINTMENT_DETAIL mad ON da.detail_id = mad.detail_id
@@ -122,25 +132,38 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
         Ip_appointment_fee_id IN NUMBER,
         Ip_slot_time IN TIMESTAMP,
         Ip_doctor_id IN NUMBER,
-        Op_detail OUT SYS_REFCURSOR
+        Op_detail_id OUT NUMBER
     ) IS
-        v_detail SYS_REFCURSOR;
-        v_agenda SYS_REFCURSOR;
+        v_detail_record MEDICAL_APPOINTMENT_DETAIL%ROWTYPE;
+        v_agenda_record DOCTOR_AGENDA%ROWTYPE;
+
     BEGIN
-        v_detail.user_id := Ip_user_id;
-        v_detail.medical_appointment_id := Ip_medical_appointment_id;
-        v_detail.appointment_fee_id := Ip_appointment_fee_id;
-        v_detail.medical_appointment_status_id := 1; 
-        v_detail.doctor_id := Ip_doctor_id;
+
+        v_detail_record.user_id := Ip_user_id;
+        v_detail_record.medical_appointment_id := Ip_medical_appointment_id;
+        v_detail_record.appointment_fee_id := Ip_appointment_fee_id;
+        v_detail_record.medical_appointment_status_id := 1; 
+        v_detail_record.doctor_id := Ip_doctor_id;
         
-        PCK_MEDICAL_APPOINTMENT_DETAIL.Proc_Insert_Medical_Appointment_Detail(v_detail); 
+        PCK_MEDICAL_APPOINTMENT_DETAIL.Proc_Insert_MEDICAL_APPOINTENT_DETAIL(
+            v_detail_record.user_id,
+            v_detail_record.medical_appointment_id,
+            v_detail_record.appointment_fee_id,
+            v_detail_record.medical_appointment_status_id,
+            v_detail_record.doctor_id,
+            Ip_slot_time,
+            Op_detail_id
+        ); 
+        
+        v_agenda_record.doctor_id := Ip_doctor_id;
+        v_agenda_record.detail_id := Op_detail_id;
 
-        v_agenda.doctor_id := Ip_doctor_id;
-        v_agenda.detail_id := Op_detail.detail_id;
-
-        PCK_DOCTOR_AGENDA.Proc_Insert_Doctor_Agenda(v_agenda); 
+        PCK_DOCTOR_AGENDA.Proc_Insert_Doctor_Agenda(
+            v_agenda_record.doctor_id,
+            v_agenda_record.detail_id
+        ); 
     EXCEPTION WHEN OTHERS THEN
-        Op_detail := NULL;
+        Op_detail_id := NULL;
     END Proc_Assign_Appointment;
 
 END PCK_DETAIL_ASSIGNMENT;

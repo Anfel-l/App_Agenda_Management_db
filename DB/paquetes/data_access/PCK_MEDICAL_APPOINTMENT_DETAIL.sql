@@ -6,7 +6,8 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT_DETAIL IS
         Ip_medical_appointment_id IN NUMBER,
         Ip_appointment_fee_id IN NUMBER,
         Ip_medical_appointment_status_id IN NUMBER,
-        Ip_appointment_time IN DATE
+        Ip_appointment_time IN TIMESTAMP,
+        Op_detail_id OUT NUMBER
     );
 
     PROCEDURE Proc_Update_MEDICAL_APPOINTENT_DETAIL(
@@ -16,7 +17,7 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT_DETAIL IS
         Ip_medical_appointment_id IN NUMBER,
         Ip_appointment_fee_id IN NUMBER,
         Ip_medical_appointment_status_id IN NUMBER,
-        Ip_appointment_time IN DATE
+        Ip_appointment_time IN TIMESTAMP
     );
 
     PROCEDURE Proc_Get_All_MEDICAL_APPOINTENT_DETAIL(
@@ -37,7 +38,8 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT_DETAIL AS
         Ip_medical_appointment_id IN NUMBER,
         Ip_appointment_fee_id IN NUMBER,
         Ip_medical_appointment_status_id IN NUMBER,
-        Ip_appointment_time IN DATE
+        Ip_appointment_time IN TIMESTAMP,
+        Op_detail_id OUT NUMBER
     )IS
     v_medical_appointment_detail_id NUMBER;
     BEGIN
@@ -59,6 +61,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT_DETAIL AS
             Ip_medical_appointment_status_id,
             Ip_appointment_time
         );
+    Op_detail_id := v_medical_appointment_detail_id;
     EXCEPTION
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Detail already exists');    
@@ -73,7 +76,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT_DETAIL AS
         Ip_medical_appointment_id IN NUMBER,
         Ip_appointment_fee_id IN NUMBER,
         Ip_medical_appointment_status_id IN NUMBER,
-        Ip_appointment_time IN DATE
+        Ip_appointment_time IN TIMESTAMP
     )IS
     BEGIN
         UPDATE MEDICAL_APPOINTMENT_DETAIL

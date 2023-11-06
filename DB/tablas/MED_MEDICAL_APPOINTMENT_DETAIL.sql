@@ -12,7 +12,7 @@ CREATE TABLE MED_USER_DBA.MEDICAL_APPOINTMENT_DETAIL(
     medical_appointment_id NUMBER(10) NOT NULL,
     appointment_fee_id NUMBER(10) NOT NULL,
     medical_appointment_status_id NUMBER(10) NOT NULL,
-    appointment_time DATE NOT NULL
+    appointment_time TIMESTAMP NOT NULL
 
 )TABLESPACE MED_TS_MANAGER;
 
