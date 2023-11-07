@@ -59,9 +59,8 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
     EXCEPTION WHEN NO_DATA_FOUND THEN
         Op_apppointment_fee_id := NULL; 
     END Proc_Calculate_Cuota;
-
-
-    PROCEDURE Proc_Validate_Priority(
+   
+       PROCEDURE Proc_Validate_Priority(
         Ip_medical_appointment_id IN NUMBER,
         Op_priority_value OUT NOCOPY DECIMAL
     ) IS
@@ -78,51 +77,86 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
     END Proc_Validate_Priority;
 
 
-    PROCEDURE Proc_Validate_Slot(
-        Ip_doctor_id IN NUMBER,
-        Ip_priority IN DECIMAL, 
-        Op_slot_time OUT NOCOPY TIMESTAMP
-    ) IS
-        v_priority_slots_offset NUMBER;
-    BEGIN
-        
-        IF Ip_priority BETWEEN 3 AND 2 THEN
-            v_priority_slots_offset := 0; 
-        ELSIF Ip_priority < 2 AND Ip_priority >= 1.5 THEN
-            v_priority_slots_offset := 1;
-        ELSIF Ip_priority < 1.5 AND Ip_priority >= 1 THEN
-            v_priority_slots_offset := 2;
-        ELSE
-            RAISE_APPLICATION_ERROR(-20002, 'Valor de prioridad no está dentro de los rangos válidos.');
+PROCEDURE Proc_Validate_Slot(
+    Ip_doctor_id IN NUMBER,
+    Ip_priority IN DECIMAL,
+    Op_slot_time OUT NOCOPY TIMESTAMP
+) IS
+
+    -- Estructura para mantener el rango de tiempo
+    TYPE time_range_type IS RECORD (
+        start_time TIMESTAMP,
+        end_time TIMESTAMP
+    );
+    v_time_range time_range_type;
+
+    -- Contador para slots libres encontrados
+    v_found_slot_count NUMBER := 0;
+
+    -- Contador para citas en el slot
+    v_appointment_count NUMBER;
+
+    -- Variable para manejar el tiempo del slot
+    v_slot_time TIMESTAMP;
+
+BEGIN
+    -- Inicializar el tiempo de salida
+    Op_slot_time := NULL;
+
+    -- Encontrar el rango de tiempo para el turno del día actual
+    FOR v_time_range IN (
+        SELECT start_time, end_time
+        FROM MED_USER_DBA.DOCTOR_SHIFT
+        WHERE doctor_id = Ip_doctor_id
+          AND TRUNC(shift_date) = TRUNC(SYSDATE) -- Asegurar que es el turno de hoy
+          AND start_time > CURRENT_TIMESTAMP -- Solo turnos que no han empezado
+        ORDER BY start_time
+    ) LOOP
+
+        -- Iterar sobre cada posible slot dentro del turno
+        v_slot_time := v_time_range.start_time;
+        WHILE v_slot_time < v_time_range.end_time LOOP
+
+            -- Verificar si el slot actual está ocupado
+            SELECT COUNT(*)
+            INTO v_appointment_count
+            FROM MED_USER_DBA.DOCTOR_AGENDA da
+            JOIN MED_USER_DBA.MEDICAL_APPOINTMENT_DETAIL mad
+              ON da.detail_id = mad.detail_id
+            WHERE da.doctor_id = Ip_doctor_id
+              AND mad.appointment_time = v_slot_time;
+
+            -- Si no hay citas, verificar la prioridad y asignar el slot
+            IF v_appointment_count = 0 THEN
+                -- Incrementar el contador de slots libres
+                v_found_slot_count := v_found_slot_count + 1;
+
+                -- Asignar el slot basado en la prioridad
+				IF (Ip_priority > 2 AND Ip_priority <= 3 AND v_found_slot_count = 1) OR
+				   (Ip_priority > 1.5 AND Ip_priority <= 2 AND v_found_slot_count = 2) OR
+				   (Ip_priority >= 1 AND Ip_priority <= 1.5 AND v_found_slot_count = 3) THEN
+				    Op_slot_time := v_slot_time;
+				    EXIT;
+				END IF;
+            END IF;
+
+            -- Incrementar al siguiente slot de 30 minutos
+            v_slot_time := v_slot_time + INTERVAL '30' MINUTE;
+        END LOOP;
+
+        -- Si se encontró un slot, no es necesario seguir buscando
+        IF Op_slot_time IS NOT NULL THEN
+            EXIT;
         END IF;
 
-        -- Consultar el slot basado en la prioridad.
-        SELECT MIN(start_time)
-        INTO Op_slot_time
-        FROM (
-            SELECT start_time, ROW_NUMBER() OVER (ORDER BY start_time) AS slot_order
-            FROM (
-                
-                SELECT (ds.START_TIME  + (level - 1) * INTERVAL '30' MINUTE) AS start_time
-                FROM MED_USER_DBA.DOCTOR_SHIFT ds
-                WHERE ds.doctor_id = Ip_doctor_id
-                AND ds.shift_date = TRUNC(SYSDATE)
-                CONNECT BY (ds.start_time + (level - 1) * INTERVAL '30' MINUTE) < ds.end_time
-            )
-			WHERE start_time NOT IN (
-			    SELECT mad.appointment_time
-			    FROM MED_USER_DBA.DOCTOR_AGENDA da
-			    JOIN MED_USER_DBA.MEDICAL_APPOINTMENT_DETAIL mad ON da.detail_id = mad.detail_id
-			    WHERE da.doctor_id = Ip_doctor_id
-			    AND TRUNC(mad.appointment_time) = TRUNC(SYSDATE)
-			)
-        )
-        WHERE slot_order = v_priority_slots_offset + 1; 
+    END LOOP;
 
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            Op_slot_time := NULL; 
-    END Proc_Validate_Slot;
+    -- Si no se encontró ningún slot, lanzar un error
+    IF Op_slot_time IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20002, 'No hay slots disponibles para la prioridad dada.');
+    END IF;
+END Proc_Validate_Slot;
+
 
 
 
