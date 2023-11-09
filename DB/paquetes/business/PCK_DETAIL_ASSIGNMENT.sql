@@ -184,7 +184,6 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
             v_agenda_record.doctor_id,
             v_agenda_record.detail_id
         ); 
-       
     EXCEPTION WHEN OTHERS THEN
         Op_detail_id := NULL;
     END Proc_Assign_Appointment;
