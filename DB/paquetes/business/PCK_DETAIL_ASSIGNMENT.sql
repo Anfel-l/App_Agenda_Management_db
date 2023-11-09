@@ -136,7 +136,6 @@ BEGIN
 
     END LOOP;
 
-    -- Si no se encontró ningún slot, lanzar un error
     IF Op_slot_time IS NULL THEN
         RAISE_APPLICATION_ERROR(-20002, 'No hay slots disponibles para la prioridad dada.');
     END IF;
