@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE PCK_DETAIL_ASSIGNMENT IS
         Ip_user_id IN NUMBER,
         Ip_medical_appointment_id IN NUMBER,
         Ip_doctor_id IN NUMBER,
-        Op_detail_id OUT NUMBER
+        Op_detail OUT SYS_REFCURSOR
     );
 
    
@@ -147,7 +147,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
         Ip_user_id IN NUMBER,
         Ip_medical_appointment_id IN NUMBER,
         Ip_doctor_id IN NUMBER,
-        Op_detail_id OUT NUMBER
+        Op_detail OUT SYS_REFCURSOR
     ) IS
         v_detail_record MEDICAL_APPOINTMENT_DETAIL%ROWTYPE;
         v_agenda_record DOCTOR_AGENDA%ROWTYPE;
@@ -155,6 +155,8 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
         v_slot_time TIMESTAMP;
         v_priority DECIMAL;
         v_fee NUMBER;
+
+        v_detail_id NUMBER;
 
     BEGIN
 		Proc_Validate_Priority(Ip_medical_appointment_id, v_priority);
@@ -167,24 +169,28 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
         v_detail_record.medical_appointment_status_id := 1; 
         v_detail_record.doctor_id := Ip_doctor_id;
         
-        PCK_MEDICAL_APPOINTMENT_DETAIL.Proc_Insert_MEDICAL_APPOINTENT_DETAIL(
+        PCK_MEDICAL_APPOINTMENT_DETAIL.Proc_Insert_MEDICAL_APPOINTMENT_DETAIL(
             v_detail_record.user_id,
             v_detail_record.medical_appointment_id,
             v_detail_record.appointment_fee_id,
             v_detail_record.medical_appointment_status_id,
             v_detail_record.doctor_id,
             v_slot_time,
-            Op_detail_id
+            v_detail_id
         ); 
         
+
         v_agenda_record.doctor_id := Ip_doctor_id;
-        v_agenda_record.detail_id := Op_detail_id;
+        v_agenda_record.detail_id := v_detail_id;
 
         PCK_DOCTOR_AGENDA.Proc_Insert_Doctor_Agenda(
             v_agenda_record.doctor_id,
             v_agenda_record.detail_id
-        ); 
+        );
+
+        PCK_MEDICAL_APPOINTMENT_DETAIL.Proc_Get_MEDICAL_APPOINTMENT_DETAIL_BY_ID(v_detail_id, Op_detail);
+         
     EXCEPTION WHEN OTHERS THEN
-        Op_detail_id := NULL;
+            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' - Error - '||SQLERRM);
     END Proc_Assign_Appointment;
 END PCK_DETAIL_ASSIGNMENT;
