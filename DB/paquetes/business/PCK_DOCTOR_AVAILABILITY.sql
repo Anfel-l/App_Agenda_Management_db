@@ -7,7 +7,7 @@ CREATE OR REPLACE PACKAGE PCK_DOCTOR_AVAILABILITY IS
     PROCEDURE Proc_Get_Doctors_By_Appointment(
         Ip_medical_appointment_id IN NUMBER,
         Ip_user_id IN NUMBER,
-        Op_doctor_id OUT NUMBER
+        Op_doctor OUT SYS_REFCURSOR
     );
 
 END PCK_DOCTOR_AVAILABILITY;
@@ -55,7 +55,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
     PROCEDURE Proc_Get_Doctors_By_Appointment(
         Ip_medical_appointment_id IN NUMBER,
         Ip_user_id IN NUMBER,
-        Op_doctor_id OUT NUMBER
+        Op_doctor OUT SYS_REFCURSOR
     ) IS
         v_medical_field_id NUMBER;
         v_centers_cursor SYS_REFCURSOR;
@@ -64,6 +64,8 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
        
         v_aux_cursor SYS_REFCURSOR;
         v_aux_id NUMBER;
+
+        v_final_cursor SYS_REFCURSOR;
     BEGIN
         SELECT medical_field_id INTO v_medical_field_id
         FROM MED_USER_DBA.MEDICAL_APPOINTMENT
@@ -90,8 +92,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
             AND D.medical_center_id MEMBER OF v_center_ids;
            
         Proc_Get_Doctor_Agenda(v_aux_cursor, v_aux_id);
-       
-       Op_doctor_id := v_aux_id;
+
+        PCK_DOCTOR.Proc_Get_DOCTOR_BY_ID(
+            Ip_doctor_id => v_aux_id,
+            Op_doctor => v_final_cursor
+        );
 
     EXCEPTION
         WHEN NO_DATA_FOUND THEN 
