@@ -156,30 +156,30 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
         v_priority DECIMAL;
         v_fee NUMBER;
 
+		v_fee_id NUMBER;
         v_detail_id NUMBER;
 
     BEGIN
 		Proc_Validate_Priority(Ip_medical_appointment_id, v_priority);
 		Proc_Calculate_Cuota(Ip_user_id, v_fee);
 	    Proc_Validate_Slot(Ip_doctor_id, v_priority, v_slot_time);
-	   
+	   	
         v_detail_record.user_id := Ip_user_id;
         v_detail_record.medical_appointment_id := Ip_medical_appointment_id;
         v_detail_record.appointment_fee_id := v_fee;
         v_detail_record.medical_appointment_status_id := 1; 
+		v_detail_record.appointment_time := v_slot_time;
         v_detail_record.doctor_id := Ip_doctor_id;
         
         PCK_MEDICAL_APPOINTMENT_DETAIL.Proc_Insert_MEDICAL_APPOINTMENT_DETAIL(
             v_detail_record.user_id,
+			v_detail_record.doctor_id,
             v_detail_record.medical_appointment_id,
             v_detail_record.appointment_fee_id,
             v_detail_record.medical_appointment_status_id,
-            v_detail_record.doctor_id,
-            v_slot_time,
+            v_detail_record.appointment_time,
             v_detail_id
         ); 
-        
-
         v_agenda_record.doctor_id := Ip_doctor_id;
         v_agenda_record.detail_id := v_detail_id;
 
@@ -187,7 +187,6 @@ CREATE OR REPLACE PACKAGE BODY PCK_DETAIL_ASSIGNMENT AS
             v_agenda_record.doctor_id,
             v_agenda_record.detail_id
         );
-
         PCK_MEDICAL_APPOINTMENT_DETAIL.Proc_Get_MEDICAL_APPOINTMENT_DETAIL_BY_ID(v_detail_id, Op_detail);
          
     EXCEPTION WHEN OTHERS THEN

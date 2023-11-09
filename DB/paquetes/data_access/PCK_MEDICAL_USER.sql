@@ -59,6 +59,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
     );
 
     TYPE medical_user_tbl IS TABLE OF medical_user_rec INDEX BY PLS_INTEGER;
+
     PROCEDURE Proc_Insert_Medical_Users (Ip_medical_users IN medical_user_tbl) IS
     BEGIN
         FORALL i IN Ip_medical_users.FIRST .. Ip_medical_users.LAST
