@@ -1,5 +1,4 @@
 CREATE OR REPLACE PACKAGE PCK_DOCTOR_AVAILABILITY IS
-
     PROCEDURE Proc_Get_Doctors_By_Appointment(
         Ip_medical_appointment_id IN NUMBER,
         Ip_user_id IN NUMBER,
@@ -16,42 +15,46 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
         Op_DOCTORS OUT SYS_REFCURSOR
     ) IS
         v_medical_field_id NUMBER;
-        v_medical_center_id_table t_medical_center_id_table := t_medical_center_id_table();
-        v_medical_center_id NUMBER;
-        v_temp_cursor SYS_REFCURSOR;
+        v_centers_cursor SYS_REFCURSOR;
+        v_center_ids NUMBER_TABLE_TYPE := NUMBER_TABLE_TYPE(); -- Utiliza el tipo de colección creado
+        v_center_record MED_USER_DBA.MEDICAL_CENTER%ROWTYPE;
     BEGIN
-        SELECT medical_field_id INTO v_medical_field_id 
-        FROM MEDICAL_APPOINTMENT 
+        SELECT medical_field_id INTO v_medical_field_id
+        FROM MED_USER_DBA.MEDICAL_APPOINTMENT
         WHERE medical_appointment_id = Ip_medical_appointment_id;
 
-        PCK_USER_LOCATION.Proc_Get_Centers_By_User_Location(Ip_user_id, v_temp_cursor);
+        MED_USER_DBA.PCK_USER_LOCATION.Proc_Get_Centers_By_User_Location(
+            Ip_User_Id => Ip_user_id,
+            Op_MEDICAL_CENTERS => v_centers_cursor
+        );
 
+        -- Fetch cada centro médico del cursor y agrega el ID a la colección
         LOOP
-            FETCH v_temp_cursor INTO v_medical_center_id;
-            EXIT WHEN v_temp_cursor%NOTFOUND;
-            v_medical_center_id_table.EXTEND;
-            v_medical_center_id_table(v_medical_center_id_table.LAST) := v_medical_center_id;
+            FETCH v_centers_cursor INTO v_center_record;
+            EXIT WHEN v_centers_cursor%NOTFOUND;
+            
+            v_center_ids.EXTEND;
+            v_center_ids(v_center_ids.LAST) := v_center_record.medical_center_id;
         END LOOP;
-        CLOSE v_temp_cursor;
 
+        -- Cierra el cursor después de su uso
+        CLOSE v_centers_cursor;
+        
+        -- Ahora usa la colección de IDs para filtrar los doctores
         OPEN Op_DOCTORS FOR
-            SELECT
-                doctor_id,
-                first_name,
-                second_name,
-                last_name,
-                medical_field_id,
-                medical_center_id
-            FROM DOCTOR
-            WHERE medical_field_id = v_medical_field_id
-            AND medical_center_id MEMBER OF v_medical_center_id_table;
+            SELECT D.* FROM MED_USER_DBA.DOCTOR D
+            WHERE D.medical_field_id = v_medical_field_id
+            AND D.medical_center_id MEMBER OF v_center_ids;
 
     EXCEPTION
+        WHEN NO_DATA_FOUND THEN 
+            RAISE_APPLICATION_ERROR(-20150, 'No doctors found for the given appointment ID and user ID.');
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20199, 'Unexpected error: ' || SQLERRM);
+            RAISE_APPLICATION_ERROR(-20199, SQLCODE || ' => ' || SQLERRM);
     END Proc_Get_Doctors_By_Appointment;
-    
+
 END PCK_DOCTOR_AVAILABILITY;
+
 
 
 

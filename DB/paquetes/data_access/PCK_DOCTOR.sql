@@ -120,4 +120,6 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR AS
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - ' || SQLCODE || ' - ERROR - ' ||SQLERRM);
     END Proc_Get_DOCTOR_BY_ID;
 
+    
+
 END PCK_DOCTOR;

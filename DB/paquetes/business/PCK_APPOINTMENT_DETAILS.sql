@@ -11,7 +11,7 @@ CREATE OR REPLACE PACKAGE PCK_APPOINTMENT_DETAILS IS
     PROCEDURE Proc_Calculate_Priority(
         Ip_ContractTypeId IN NUMBER,
         Ip_SymptomId IN NUMBER,
-        Op_Priority OUT NUMBER
+        Op_Priority OUT DECIMAL
     );
 
 END PCK_APPOINTMENT_DETAILS;
@@ -22,7 +22,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_APPOINTMENT_DETAILS IS
     PROCEDURE Proc_Calculate_Priority(
         Ip_ContractTypeId IN NUMBER,
         Ip_SymptomId IN NUMBER,
-        Op_Priority OUT NUMBER
+        Op_Priority OUT DECIMAL
     ) IS
         v_contract_type_cursor SYS_REFCURSOR;
         v_symptom_cursor SYS_REFCURSOR;
@@ -55,7 +55,6 @@ CREATE OR REPLACE PACKAGE BODY PCK_APPOINTMENT_DETAILS IS
         v_user_record MEDICAL_USER%ROWTYPE;
         v_user_cursor SYS_REFCURSOR;
         v_priority_value DECIMAL;
-
     BEGIN
 
         PCK_MEDICAL_USER.Proc_Get_MEDICAL_USER_BY_ID(Ip_User_Id, v_user_cursor);
