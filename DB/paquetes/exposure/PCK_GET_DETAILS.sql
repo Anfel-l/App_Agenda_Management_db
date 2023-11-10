@@ -32,7 +32,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_GET_DETAILS AS
     IS
     BEGIN
         OPEN Op_details FOR
-        SELECT u.first_name, u.second_name, u.last_name, dt.description, document AS document_type, ct.contract_type_name, l.location_name
+        SELECT u.first_name, u.second_name, u.last_name, u.document, dt.description AS document_type, ct.contract_type_name, l.location_name
         FROM MEDICAL_USER u
         JOIN DOCUMENT_TYPE dt ON u.document_type_id = dt.document_type_id
         JOIN CONTRACT_TYPE ct ON u.contract_type_id = ct.contract_type_id
