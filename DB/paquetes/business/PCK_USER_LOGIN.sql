@@ -1,5 +1,6 @@
 CREATE OR REPLACE PACKAGE PCK_USER_LOGIN AS
     PROCEDURE Proc_User_Login(
+        Ip_document_type IN NUMBER,
         Ip_Document IN VARCHAR2,
         Ip_Password IN VARCHAR2,
         Op_UserId OUT NUMBER,
@@ -9,6 +10,7 @@ END PCK_USER_LOGIN;
 CREATE OR REPLACE PACKAGE BODY PCK_USER_LOGIN IS
 
     PROCEDURE Proc_User_Login(
+        Ip_document_type IN NUMBER,
         Ip_Document IN VARCHAR2,
         Ip_Password IN VARCHAR2,
         Op_UserId OUT NUMBER,
@@ -22,7 +24,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_USER_LOGIN IS
         FETCH v_user_cursor INTO v_user_record;
 
         IF v_user_cursor%FOUND THEN
-            IF v_user_record.password = Ip_Password THEN
+            IF v_user_record.password = Ip_Password AND v_user_record.document_type = Ip_document_type THEN
                 Op_UserId := v_user_record.user_id;
                 Op_Result := 'Login successful';
             ELSE
