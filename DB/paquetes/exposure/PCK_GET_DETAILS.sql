@@ -77,7 +77,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_GET_DETAILS AS
             JOIN APPOINTMENT_FEE af ON mad.appointment_fee_id = af.appointment_fee_id
             JOIN MEDICAL_APPOINTMENT_STATUS mas ON mad.medical_appointment_status_id = mas.medical_appointment_status_id
         WHERE mad.detail_id = Ip_appointment_detail_id;
-        
+
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20199, SQLCODE || ' => ' || SQLERRM);
@@ -114,10 +114,13 @@ CREATE OR REPLACE PACKAGE BODY PCK_GET_DETAILS AS
             JOIN MEDICAL_APPOINTMENT ma ON mad.medical_appointment_id = ma.medical_appointment_id
             JOIN APPOINTMENT_FEE af ON mad.appointment_fee_id = af.appointment_fee_id
             JOIN MEDICAL_APPOINTMENT_STATUS mas ON mad.medical_appointment_status_id = mas.medical_appointment_status_id
-        WHERE mad.doctor_id = Ip_doctor_id;
+            WHERE d.doctor_id = Ip_doctor_id;
+
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20199, SQLCODE || ' => ' || SQLERRM);
     END Proc_GET_AGENDA_DETAILS;
+
+
 
 END PCK_GET_DETAILS;
