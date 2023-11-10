@@ -3,7 +3,9 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT IS
         Ip_medical_appointment_type_id IN NUMBER,
         Ip_symptom_id IN NUMBER,
         Ip_medical_priority IN DECIMAL,
-        Ip_medical_field_id IN NUMBER
+        Ip_medical_field_id IN NUMBER,
+        Op_appointment_id OUT NUMBER
+
     );
 
     PROCEDURE Proc_Update_MEDICAL_APPOINTMENT(
@@ -30,7 +32,9 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT AS
         Ip_medical_appointment_type_id IN NUMBER,
         Ip_symptom_id IN NUMBER,
         Ip_medical_priority IN DECIMAL,
-        Ip_medical_field_id IN NUMBER
+        Ip_medical_field_id IN NUMBER,
+        Op_appointment_id OUT NUMBER
+
     )IS
     v_medical_appointment_id NUMBER;
     BEGIN
@@ -48,7 +52,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT AS
         Ip_symptom_id,
         Ip_medical_priority,
         Ip_medical_field_id);
-
+    Op_appointment_id := v_medical_appointment_id;
     EXCEPTION
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Medical appointment already exists' || SQLERRM );
