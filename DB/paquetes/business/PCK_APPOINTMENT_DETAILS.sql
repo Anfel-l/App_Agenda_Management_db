@@ -5,7 +5,7 @@ CREATE OR REPLACE PACKAGE PCK_APPOINTMENT_DETAILS IS
         Ip_MedicalAppointmentTypeId IN NUMBER,
         Ip_Medical_fieldId IN NUMBER,
         Ip_SymptomId IN NUMBER,
-        Op_AppointmentId OUT NUMBER
+        Op_Appointment OUT SYS_REFCURSOR
     );
 
     PROCEDURE Proc_Calculate_Priority(
@@ -48,12 +48,14 @@ CREATE OR REPLACE PACKAGE BODY PCK_APPOINTMENT_DETAILS IS
         Ip_MedicalAppointmentTypeId IN NUMBER,
         Ip_Medical_fieldId IN NUMBER,
         Ip_SymptomId IN NUMBER,
-        Op_AppointmentId OUT NUMBER
+        Op_Appointment OUT SYS_REFCURSOR
     ) IS
         v_appointment_record MEDICAL_APPOINTMENT%ROWTYPE;
         v_user_record MEDICAL_USER%ROWTYPE;
         v_user_cursor SYS_REFCURSOR;
         v_priority_value DECIMAL;
+
+        v_appointment_id NUMBER;
     BEGIN
 
         PCK_MEDICAL_USER.Proc_Get_MEDICAL_USER_BY_ID(Ip_User_Id, v_user_cursor);
@@ -70,14 +72,14 @@ CREATE OR REPLACE PACKAGE BODY PCK_APPOINTMENT_DETAILS IS
             v_appointment_record.medical_appointment_type_id,
             v_appointment_record.symptom_id,
             v_appointment_record.medical_priority,
-            v_appointment_record.medical_field_id
+            v_appointment_record.medical_field_id,
+            v_appointment_id
             );
 
-        Op_AppointmentId := v_appointment_record.medical_appointment_id;
-
+        PCK_MEDICAL_APPOINTMENT.Proc_Get_MEDICAL_APPOINTMENT_BY_ID(v_appointment_id, Op_Appointment);
     EXCEPTION
         WHEN OTHERS THEN
-            Op_AppointmentId := NULL;
+            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' - Error - '||SQLERRM);
     END Proc_Enter_Appointment_Details;
 
 END PCK_APPOINTMENT_DETAILS;
