@@ -12,9 +12,25 @@ CREATE OR REPLACE PACKAGE PCK_GET_APPOINTMENT_ITEMS IS
         Op_medical_fields OUT SYS_REFCURSOR
     );
 
+    PROCEDURE Proc_Get_Medical_Center(
+        Ip_medical_center_id IN NUMBER,
+        Op_medical_center OUT SYS_REFCURSOR
+    );
+
 END PCK_GET_APPOINTMENT_ITEMS;
 
 CREATE OR REPLACE PACKAGE BODY PCK_GET_APPOINTMENT_ITEMS AS
+
+    PROCEDURE Proc_Get_Medical_Center(
+        Ip_medical_center_id IN NUMBER,
+        Op_medical_center OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        PCK_MEDICAL_CENTER.Proc_Get_MEDICAL_CENTER_BY_ID(Ip_medical_center_id, Op_medical_center);
+    EXCEPTION
+            WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20199, SQLCODE || ' => ' || SQLERRM);
+    END Proc_Get_Medical_Center;
 
     PROCEDURE Proc_Get_All_Sympmtoms(
         Op_symptoms OUT SYS_REFCURSOR
