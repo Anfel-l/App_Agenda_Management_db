@@ -90,11 +90,20 @@ CREATE OR REPLACE PACKAGE BODY PCK_GET_DETAILS AS
     IS
     BEGIN
         OPEN Op_details FOR
-            SELECT d.first_name, d.last_name, mf.medical_field_name, mc.medical_center_name
+            SELECT 
+                d.doctor_id,
+                d.first_name,
+                d.second_name,
+                d.last_name,
+                mf.medical_field_name,
+                mc.medical_center_name,
+                ds.start_time,
+                ds.end_time
             FROM DOCTOR d
             JOIN MEDICAL_FIELD mf ON d.medical_field_id = mf.medical_field_id
             JOIN MEDICAL_CENTER mc ON d.medical_center_id = mc.medical_center_id
-        WHERE d.doctor_id = Ip_doctor_id;
+            JOIN DOCTOR_SHIFT ds ON d.doctor_id = ds.doctor_id
+            WHERE d.doctor_id = Ip_doctor_id;
         
     EXCEPTION
         WHEN OTHERS THEN
