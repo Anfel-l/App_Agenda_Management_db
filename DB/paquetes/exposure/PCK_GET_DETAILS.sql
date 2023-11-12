@@ -116,11 +116,20 @@ CREATE OR REPLACE PACKAGE BODY PCK_GET_DETAILS AS
     IS
     BEGIN
         OPEN Op_agenda FOR
-            SELECT mad.detail_id, u.first_name || ' ' || u.last_name AS user_name, d.first_name || ' ' || d.last_name AS doctor_name, ma.medical_appointment_id, af.fee_value, mas.status, mad.appointment_time
+            SELECT 
+                mad.detail_id, 
+                u.first_name || ' ' || u.last_name AS user_name, 
+                d.first_name || ' ' || d.last_name AS doctor_name, 
+                ma.medical_appointment_id, 
+                af.fee_value, 
+                mas.status, 
+                mad.appointment_time,
+                s.symptom_name
             FROM MEDICAL_APPOINTMENT_DETAIL mad
             JOIN MEDICAL_USER u ON mad.user_id = u.user_id
             JOIN DOCTOR d ON mad.doctor_id = d.doctor_id
             JOIN MEDICAL_APPOINTMENT ma ON mad.medical_appointment_id = ma.medical_appointment_id
+            JOIN SYMPTOM s ON ma.symptom_id = s.symptom_id
             JOIN APPOINTMENT_FEE af ON mad.appointment_fee_id = af.appointment_fee_id
             JOIN MEDICAL_APPOINTMENT_STATUS mas ON mad.medical_appointment_status_id = mas.medical_appointment_status_id
             WHERE d.doctor_id = Ip_doctor_id;
@@ -129,6 +138,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_GET_DETAILS AS
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20199, SQLCODE || ' => ' || SQLERRM);
     END Proc_GET_AGENDA_DETAILS;
+
 
 
 
