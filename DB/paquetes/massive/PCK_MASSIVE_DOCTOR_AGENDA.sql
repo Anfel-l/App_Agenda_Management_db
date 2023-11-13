@@ -12,6 +12,8 @@ CREATE OR REPLACE PACKAGE PCK_MASSIVE_DOCTOR_AGENDA AS
 END PCK_MASSIVE_DOCTOR_AGENDA;
 
 
+
+
 CREATE OR REPLACE PACKAGE BODY PCK_MASSIVE_DOCTOR_AGENDA IS
 
     PROCEDURE Proc_GET_DOCTOR_IDS(
@@ -28,6 +30,9 @@ CREATE OR REPLACE PACKAGE BODY PCK_MASSIVE_DOCTOR_AGENDA IS
         v_fee_value NUMBER;
         v_status VARCHAR2(100);
         v_appointment_time TIMESTAMP;
+        v_symptom VARCHAR2(100);
+
+        v_agenda_details_table AGENDA_DETAIL_TABLE_TYPE := AGENDA_DETAIL_TABLE_TYPE();
        
     BEGIN
         LOOP
@@ -37,10 +42,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MASSIVE_DOCTOR_AGENDA IS
             PCK_GET_DETAILS.Proc_GET_AGENDA_DETAILS(v_doctor_id, v_agenda_details);
 
             LOOP
-                FETCH v_agenda_details INTO v_detail_id, v_user_name, v_doctor_name, v_medical_appointment_id, v_fee_value, v_status, v_appointment_time;
+                FETCH v_agenda_details INTO v_detail_id, v_user_name, v_doctor_name, v_medical_appointment_id, v_fee_value, v_status, v_appointment_time, v_symptom;
                 EXIT WHEN v_agenda_details%NOTFOUND;
 
-                INSERT INTO temp_agenda_details VALUES (v_detail_id, v_user_name, v_doctor_name, v_medical_appointment_id, v_fee_value, v_status, v_appointment_time);
+                v_agenda_details_table.EXTEND;
+                v_agenda_details_table(v_agenda_details_table.LAST) := AGENDA_DETAIL_TYPE(v_detail_id, v_user_name, v_doctor_name, v_medical_appointment_id, v_fee_value, v_status, v_appointment_time, v_symptom);
             END LOOP;
 
             CLOSE v_agenda_details;
@@ -48,7 +54,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MASSIVE_DOCTOR_AGENDA IS
 
         CLOSE Ip_doctors;
 
-        OPEN Op_doctor_agenda FOR SELECT * FROM temp_agenda_details;
+        OPEN Op_doctor_agenda FOR SELECT * FROM TABLE(CAST(v_agenda_details_table AS AGENDA_DETAIL_TABLE_TYPE));
     END Proc_GET_DOCTOR_IDS;
 
     PROCEDURE Proc_GET_AGENDA(
