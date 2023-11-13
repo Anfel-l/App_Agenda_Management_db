@@ -1,31 +1,3 @@
-CREATE OR REPLACE PACKAGE MED_USER_DBA.PCK_DETAIL_ASSIGNMENT IS
-
-    PROCEDURE Proc_Calculate_Cuota(
-        Ip_user_id IN NUMBER,
-        Op_apppointment_fee_id OUT NOCOPY NUMBER
-    );
-
-    PROCEDURE Proc_Validate_Priority(
-        Ip_medical_appointment_id IN NUMBER,
-        Op_priority_value OUT NOCOPY DECIMAL
-    );
-
-    PROCEDURE Proc_Validate_Slot(
-        Ip_doctor_id IN NUMBER,
-        Ip_priority IN DECIMAL,
-        Op_slot_time OUT NOCOPY TIMESTAMP 
-    );
-
-    PROCEDURE Proc_Assign_Appointment(
-        Ip_user_id IN NUMBER,
-        Ip_medical_appointment_id IN NUMBER,
-        Ip_doctor_id IN NUMBER,
-        Op_detail OUT SYS_REFCURSOR
-    );
-
-   
-END PCK_DETAIL_ASSIGNMENT;
-
 CREATE OR REPLACE PACKAGE BODY MED_USER_DBA.PCK_DETAIL_ASSIGNMENT AS
 
 
@@ -77,72 +49,82 @@ CREATE OR REPLACE PACKAGE BODY MED_USER_DBA.PCK_DETAIL_ASSIGNMENT AS
 	        Op_priority_value := NULL;
     	END Proc_Validate_Priority;
    
-		PROCEDURE Proc_Validate_Slot(
-			Ip_doctor_id IN NUMBER,
-			Ip_priority IN DECIMAL,
-			Op_slot_time OUT NOCOPY TIMESTAMP
-		) IS
+PROCEDURE Proc_Validate_Slot(
+    Ip_doctor_id IN NUMBER,
+    Ip_priority IN DECIMAL,
+    Op_slot_time OUT NOCOPY TIMESTAMP
+) IS
+    v_time_range time_range_type;
+    v_found_slot_count NUMBER := 0;
+    v_appointment_count NUMBER;
+    v_current_time TIMESTAMP := CURRENT_TIMESTAMP;
+    v_slot_time TIMESTAMP;
+    v_shift_start_time TIMESTAMP;
+    v_shift_end_time TIMESTAMP;
 
-			v_time_range time_range_type;
+BEGIN
+    Op_slot_time := NULL;
 
-			v_found_slot_count NUMBER := 0;
+    -- Obtener la hora de inicio y fin del turno del doctor
+    SELECT MIN(start_time), MAX(end_time)
+    INTO v_shift_start_time, v_shift_end_time
+    FROM MED_USER_DBA.DOCTOR_SHIFT
+    WHERE doctor_id = Ip_doctor_id
+    AND TRUNC(shift_date) = TRUNC(SYSDATE)
+    AND end_time > v_current_time;
 
-			v_appointment_count NUMBER;
+    -- Si la hora actual es antes del inicio del turno, iniciar desde el inicio del turno
+    IF v_current_time < v_shift_start_time THEN
+        v_current_time := v_shift_start_time;
+    END IF;
 
-			v_current_time TIMESTAMP := CURRENT_TIMESTAMP;
-			v_slot_time TIMESTAMP;
-		
-		BEGIN
-			
-			Op_slot_time := NULL;
+    FOR v_time_range IN (
+        SELECT start_time, end_time
+        FROM MED_USER_DBA.DOCTOR_SHIFT
+        WHERE doctor_id = Ip_doctor_id
+        AND TRUNC(shift_date) = TRUNC(SYSDATE)
+        AND end_time > v_current_time
+        ORDER BY start_time
+    ) LOOP
 
-			FOR v_time_range IN (
-				SELECT start_time, end_time
-				FROM MED_USER_DBA.DOCTOR_SHIFT
-				WHERE doctor_id = Ip_doctor_id
-				AND TRUNC(shift_date) = TRUNC(SYSDATE)
-				AND end_time > v_current_time
-				ORDER BY start_time
-			) LOOP
+        v_slot_time := GREATEST(v_time_range.start_time, v_current_time);
 
-				v_slot_time := GREATEST(v_time_range.start_time, v_current_time);
+        IF EXTRACT(MINUTE FROM v_slot_time) NOT IN (0, 30) THEN
+            v_slot_time := TRUNC(v_slot_time, 'HH') + (TRUNC(EXTRACT(MINUTE FROM v_slot_time) / 30) + 1) * INTERVAL '30' MINUTE;
+        END IF;
 
-				IF EXTRACT(MINUTE FROM v_slot_time) NOT IN (0, 30) THEN
-					v_slot_time := TRUNC(v_slot_time, 'HH') + (TRUNC(EXTRACT(MINUTE FROM v_slot_time) / 30) + 1) * INTERVAL '30' MINUTE;
-				END IF;
+        WHILE v_slot_time < v_time_range.end_time LOOP
 
-				WHILE v_slot_time < v_time_range.end_time LOOP
+            SELECT COUNT(*)
+            INTO v_appointment_count
+            FROM MED_USER_DBA.DOCTOR_AGENDA da
+            JOIN MED_USER_DBA.MEDICAL_APPOINTMENT_DETAIL mad
+              ON da.detail_id = mad.detail_id
+            WHERE da.doctor_id = Ip_doctor_id
+              AND mad.appointment_time = v_slot_time;
 
-					SELECT COUNT(*)
-					INTO v_appointment_count
-					FROM MED_USER_DBA.DOCTOR_AGENDA da
-					JOIN MED_USER_DBA.MEDICAL_APPOINTMENT_DETAIL mad
-					ON da.detail_id = mad.detail_id
-					WHERE da.doctor_id = Ip_doctor_id
-					AND mad.appointment_time = v_slot_time;
+            IF v_appointment_count = 0 THEN
+                v_found_slot_count := v_found_slot_count + 1;
 
-					IF v_appointment_count = 0 THEN
-						v_found_slot_count := v_found_slot_count + 1;
+                IF (Ip_priority > 2 AND Ip_priority <= 3 AND v_found_slot_count = 1) OR
+                   (Ip_priority > 1.5 AND Ip_priority <= 2 AND v_found_slot_count = 2) OR
+                   (Ip_priority >= 1 AND Ip_priority <= 1.5 AND v_found_slot_count = 3) THEN
+                    Op_slot_time := v_slot_time;
+                    EXIT;
+                END IF;
+            END IF;
+            v_slot_time := v_slot_time + INTERVAL '30' MINUTE;
+        END LOOP;
+        IF Op_slot_time IS NOT NULL THEN
+            EXIT;
+        END IF;
 
-						IF (Ip_priority > 2 AND Ip_priority <= 3 AND v_found_slot_count = 1) OR
-						(Ip_priority > 1.5 AND Ip_priority <= 2 AND v_found_slot_count = 2) OR
-						(Ip_priority >= 1 AND Ip_priority <= 1.5 AND v_found_slot_count = 3) THEN
-							Op_slot_time := v_slot_time;
-							EXIT;
-						END IF;
-					END IF;
-					v_slot_time := v_slot_time + INTERVAL '30' MINUTE;
-				END LOOP;
-				IF Op_slot_time IS NOT NULL THEN
-					EXIT;
-				END IF;
+    END LOOP;
 
-			END LOOP;
-
-			IF Op_slot_time IS NULL THEN
-				RAISE_APPLICATION_ERROR(-20002, 'No hay slots disponibles para la prioridad dada.');
-			END IF;
-		END Proc_Validate_Slot;
+    IF Op_slot_time IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20002, 'No hay slots disponibles para la prioridad dada.');
+    END IF;
+END Proc_Validate_Slot;
 
 
     PROCEDURE Proc_Assign_Appointment(
