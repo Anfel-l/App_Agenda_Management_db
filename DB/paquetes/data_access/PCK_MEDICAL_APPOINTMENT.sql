@@ -57,7 +57,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Medical appointment already exists' || SQLERRM );
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM); 
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Insert_MEDICAL_APPOINTMENT;
 
     PROCEDURE Proc_Update_MEDICAL_APPOINTMENT(
@@ -76,7 +80,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT AS
         WHERE medical_appointment_id = Ip_medical_appointment_id;
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM); 
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Update_MEDICAL_APPOINTMENT;
 
     PROCEDURE Proc_Get_All_MEDICAL_APPOINTMENT(
@@ -102,14 +110,14 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT AS
     )IS
     BEGIN
         OPEN Op_medical_appointment FOR
-            SELECT 
+            SELECT /*+ INDEX(l PK_MEDICAL_APPOINTMENT) */
                 medical_appointment_id,
                 medical_appointment_type_id,
                 symptom_id,
                 medical_priority,
                 medical_field_id
-            FROM MEDICAL_APPOINTMENT
-            WHERE medical_appointment_id = Ip_medical_appointment_id;
+            FROM MEDICAL_APPOINTMENT ma
+            WHERE ma.medical_appointment_id = Ip_medical_appointment_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM); 

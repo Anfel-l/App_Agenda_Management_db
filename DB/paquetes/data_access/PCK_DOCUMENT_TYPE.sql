@@ -41,7 +41,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCUMENT_TYPE AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'A document type with abbreviation '||ip_document_type_abbreviation||' already exists.');
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered -'||SQLCODE||'-ERROR-' ||SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Insert_DOCUMENT_TYPE;
 
     PROCEDURE Proc_Update_DOCUMENT_TYPE(
@@ -71,7 +75,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCUMENT_TYPE AS
         FROM DOCUMENT_TYPE;
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered -'||SQLCODE||'-ERROR-' ||SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Get_All_DOCUMENT_TYPE;
 
     PROCEDURE Proc_Get_DOCUMENT_TYPE_BY_ID(
@@ -80,12 +88,12 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCUMENT_TYPE AS
     ) IS
     BEGIN
     OPEN Op_document_type FOR
-        SELECT
+        SELECT /*+ INDEX(dt PK_DOCUMENT_TYPE) */
             document_type_id,
             document_type_abbreviation,
             description
-        FROM DOCUMENT_TYPE
-        WHERE document_type_id = ip_document_type_id;
+        FROM DOCUMENT_TYPE dt
+        WHERE dt.document_type_id = ip_document_type_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered -'||SQLCODE||'-ERROR-' ||SQLERRM);

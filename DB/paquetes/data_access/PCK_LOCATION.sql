@@ -36,7 +36,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_LOCATION AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Location already exists');
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);        
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;      
     END Proc_Insert_LOCATION;
 
     PROCEDURE Proc_Update_LOCATION(
@@ -75,16 +79,20 @@ CREATE OR REPLACE PACKAGE BODY PCK_LOCATION AS
     )IS
     BEGIN
         OPEN Op_location FOR
-        SELECT
+        SELECT /*+ INDEX(l PK_LOCATION) */
             location_id,
             location_name
         FROM
-            LOCATION
+            LOCATION l
         WHERE
-            location_id = ip_location_id;
+            l.location_id = ip_location_id;
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);        
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;     
     END Proc_Get_LOCATION_BY_ID;
 
 END PCK_LOCATION;

@@ -51,7 +51,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_SHIFT AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Duplicate value');
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '|| SQLCODE || '- ERROR - ' || SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Insert_DOCTOR_SHIFT;
 
     PROCEDURE Proc_Update_DOCTOR_SHIFT(
@@ -71,7 +75,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_SHIFT AS
         WHERE doctor_shift_id = Ip_doctor_shift_id; 
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '|| SQLCODE || '- ERROR - ' || SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Update_DOCTOR_SHIFT;
 
     PROCEDURE Proc_Get_All_DOCTOR_SHIFT(
@@ -97,14 +105,14 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_SHIFT AS
     ) IS
     BEGIN
         OPEN Op_doctor_shift FOR
-        SELECT
+        SELECT /*+ INDEX(ds PK_DOCTOR_SHIFT) */
             doctor_shift_id,
             doctor_id,
             shift_date,
             start_time,
             end_time
-        FROM DOCTOR_SHIFT
-        WHERE doctor_shift_id = Ip_doctor_shift_id;
+        FROM DOCTOR_SHIFT ds
+        WHERE ds.doctor_shift_id = Ip_doctor_shift_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '|| SQLCODE || '- ERROR - ' || SQLERRM);

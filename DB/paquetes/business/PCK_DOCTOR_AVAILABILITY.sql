@@ -26,7 +26,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
 	        FETCH Ip_Doctor_Ids INTO v_doctor_record;
 	        EXIT WHEN Ip_Doctor_Ids%NOTFOUND;
 	
-	        SELECT COUNT(*)
+	        SELECT /*+ INDEX (DA idx_doctor_agenda) */ COUNT(*)
 	        INTO v_current_appointments
 	        FROM DOCTOR_AGENDA
 	        WHERE doctor_id = v_doctor_record.doctor_id;
@@ -66,7 +66,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
         v_aux_id NUMBER;
 
     BEGIN
-        SELECT medical_field_id INTO v_medical_field_id
+        SELECT /*+ USE_NL (MA) */ medical_field_id INTO v_medical_field_id
         FROM MED_USER_DBA.MEDICAL_APPOINTMENT
         WHERE medical_appointment_id = Ip_medical_appointment_id;
 
@@ -86,14 +86,19 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AVAILABILITY AS
         CLOSE v_centers_cursor;
         
         OPEN v_aux_cursor FOR
-            SELECT D.* FROM MED_USER_DBA.DOCTOR D
+            SELECT
+                D.doctor_id,
+                D.first_name,
+                D.second_name,
+                D.last_name,
+                D.medical_field_id,
+                D.medical_center_id
+            FROM MED_USER_DBA.DOCTOR D
             WHERE D.medical_field_id = v_medical_field_id
             AND D.medical_center_id MEMBER OF v_center_ids;
            
         Proc_Get_Doctor_Agenda(v_aux_cursor, v_aux_id);
-
         PCK_DOCTOR.Proc_Get_DOCTOR_BY_ID(v_aux_id, Op_doctor);
-
     EXCEPTION
         WHEN NO_DATA_FOUND THEN 
             RAISE_APPLICATION_ERROR(-20150, 'No doctors found for the given appointment ID and user ID.');

@@ -41,7 +41,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AGENDA AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'The doctor agenda already exists.');
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '|| SQLCODE || '- Error -' || SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Insert_DOCTOR_AGENDA;
 
     PROCEDURE Proc_Update_DOCTOR_AGENDA (
@@ -59,7 +63,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AGENDA AS
     
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '|| SQLCODE || '- Error -' || SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Update_DOCTOR_AGENDA;
 
     PROCEDURE Proc_Get_All_DOCTOR_AGENDA (
@@ -85,11 +93,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR_AGENDA AS
     ) IS
     BEGIN
         OPEN Op_doctor_agenda FOR
-        SELECT
+        SELECT /*+ INDEX(da PK_DOCTOR_AGENDA) */
             doctor_id,
             detail_id
-        FROM DOCTOR_AGENDA
-        WHERE doctor_id = Ip_doctor_id;
+        FROM DOCTOR_AGENDA da
+        WHERE da.doctor_id = Ip_doctor_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '|| SQLCODE || '- Error -' || SQLERRM);

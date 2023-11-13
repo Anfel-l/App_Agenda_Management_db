@@ -47,7 +47,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_CONTRACT_TYPE AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Duplicate value');
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered -' || SQLCODE || '- ERROR -' || SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Insert_CONTRACT_TYPE;
 
     PROCEDURE Proc_Update_CONTRACT_TYPE(
@@ -67,7 +71,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_CONTRACT_TYPE AS
             contract_type_id = Ip_contract_type_id; 
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered -' || SQLCODE || '- ERROR -' || SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Update_CONTRACT_TYPE;
 
     PROCEDURE Proc_Get_All_CONTRACT_TYPE(
@@ -93,15 +101,13 @@ CREATE OR REPLACE PACKAGE BODY PCK_CONTRACT_TYPE AS
     )IS
     BEGIN
         OPEN Op_contract_type FOR
-            SELECT
-                contract_type_id,
-                contract_type_name,
-                description,
-                contract_type_priority
-            FROM
-                CONTRACT_TYPE
-            WHERE
-                contract_type_id = Ip_contract_type_id;
+        SELECT /*+ INDEX(ct PK_CONTRACT_TYPE) */
+            contract_type_id,
+            contract_type_name,
+            description,
+            contract_type_priority
+        FROM CONTRACT_TYPE ct
+        WHERE ct.contract_type_id = Ip_contract_type_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered -' || SQLCODE || '- ERROR -' || SQLERRM);

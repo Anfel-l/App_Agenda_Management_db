@@ -39,7 +39,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_FIELD AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001,'Already existing - '||SQLCODE||' -ERROR- '||SQLERRM);
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Insert_MEDICAL_FIELD;
 
     PROCEDURE Proc_Update_MEDICAL_FIELD(
@@ -53,8 +57,12 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_FIELD AS
             description = Ip_description
         WHERE medical_field_id = Ip_medical_field_id;
     EXCEPTION
-         WHEN OTHERS THEN
-                RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+        WHEN OTHERS THEN
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Update_MEDICAL_FIELD;
 
     PROCEDURE Proc_Get_All_MEDICAL_FIELD(
@@ -78,12 +86,12 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_FIELD AS
     )IS
     BEGIN
         OPEN Op_medical_field FOR
-        SELECT 
+        SELECT /*+ INDEX(mf PK_MEDICAL_FIELD) */
             medical_field_id,
             medical_field_name,
             description
-        FROM MEDICAL_FIELD
-        WHERE medical_field_id = Ip_medical_field_id;
+        FROM MEDICAL_FIELD mf
+        WHERE mf.medical_field_id = Ip_medical_field_id;
     EXCEPTION
          WHEN OTHERS THEN
                 RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);

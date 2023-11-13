@@ -22,12 +22,8 @@ CREATE OR REPLACE PACKAGE BODY PCK_USER_LOCATION AS
         
         FETCH v_user_location INTO v_user_record;
         CLOSE v_user_location;
-        
-        
         IF v_user_record.location_id IS NOT NULL THEN
             v_location_id := v_user_record.location_id;
-            
-            
             PCK_MEDICAL_CENTER.Proc_Get_MEDICAL_CENTER_BY_LOCATION(v_location_id, Op_MEDICAL_CENTERS);
         ELSE
             RAISE_APPLICATION_ERROR(-20150, 'Error: No user location found [PCK_USER_LOCATION.Proc_Get_Centers_By_User_Location]');

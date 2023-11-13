@@ -119,7 +119,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT_DETAIL AS
     )IS
     BEGIN
         OPEN Op_medical_appointment_detail FOR
-            SELECT
+            SELECT /*+ INDEX(md PK_MEDICAL_APPOINTMENT_DETAIL) */
                 detail_id,
                 user_id,
                 doctor_id,
@@ -127,11 +127,15 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT_DETAIL AS
                 appointment_fee_id,
                 medical_appointment_status_id,
                 appointment_time
-            FROM MEDICAL_APPOINTMENT_DETAIL
-            WHERE detail_id = Ip_detail_id; 
+            FROM MEDICAL_APPOINTMENT_DETAIL md
+            WHERE md.detail_id = Ip_detail_id; 
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered -'||SQLCODE||' - Error - ' ||SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END PRoc_Get_MEDICAL_APPOINTMENT_DETAIL_BY_ID;
 
 END PCK_MEDICAL_APPOINTMENT_DETAIL;

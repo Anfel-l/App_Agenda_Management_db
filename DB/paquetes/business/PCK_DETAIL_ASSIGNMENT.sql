@@ -1,8 +1,4 @@
 CREATE OR REPLACE PACKAGE BODY MED_USER_DBA.PCK_DETAIL_ASSIGNMENT AS
-
-
-
-
 	    PROCEDURE Proc_Calculate_Cuota(
 	        Ip_user_id IN NUMBER,
 	        Op_apppointment_fee_id OUT NOCOPY NUMBER
@@ -65,7 +61,6 @@ PROCEDURE Proc_Validate_Slot(
 BEGIN
     Op_slot_time := NULL;
 
-    -- Obtener la hora de inicio y fin del turno del doctor
     SELECT MIN(start_time), MAX(end_time)
     INTO v_shift_start_time, v_shift_end_time
     FROM MED_USER_DBA.DOCTOR_SHIFT
@@ -73,7 +68,6 @@ BEGIN
     AND TRUNC(shift_date) = TRUNC(SYSDATE)
     AND end_time > v_current_time;
 
-    -- Si la hora actual es antes del inicio del turno, iniciar desde el inicio del turno
     IF v_current_time < v_shift_start_time THEN
         v_current_time := v_shift_start_time;
     END IF;

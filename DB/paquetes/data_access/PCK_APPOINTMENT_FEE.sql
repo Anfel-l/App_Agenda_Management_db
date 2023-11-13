@@ -85,12 +85,12 @@ CREATE OR REPLACE PACKAGE BODY PCK_APPOINTMENT_FEE AS
     ) IS
     BEGIN
         OPEN Op_appointment_fee FOR
-            SELECT
+            SELECT /*+ INDEX(af idx_appointment_fee_contract_type_id) */
                 appointment_fee_id,
                 contract_type_id,
                 fee_value
-            FROM APPOINTMENT_FEE
-            WHERE contract_type_id = Ip_contract_type_id;
+            FROM APPOINTMENT_FEE af
+            WHERE af.contract_type_id = Ip_contract_type_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);

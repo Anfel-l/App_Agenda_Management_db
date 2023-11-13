@@ -41,7 +41,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_CENTER AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Symptom already exists');
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);   
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;  
     END Proc_Insert_MEDICAL_CENTER;
 
 
@@ -55,6 +59,13 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_CENTER AS
         SET medical_center_name = Ip_medical_center_name,
             location_id = Ip_location_id
         WHERE medical_center_id = Ip_medical_center_id;
+    EXCEPTION
+        WHEN OTHERS THEN
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Update_MEDICAL_CENTER;
 
     PROCEDURE Proc_Get_All_MEDICAL_CENTER(
@@ -64,6 +75,9 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_CENTER AS
         OPEN Op_medical_center FOR
         SELECT medical_center_id, medical_center_name, location_id
         FROM MEDICAL_CENTER;
+    EXCEPTION
+         WHEN OTHERS THEN
+                RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
     END Proc_Get_All_MEDICAL_CENTER;
 
     PROCEDURE Proc_Get_MEDICAL_CENTER_BY_ID(
@@ -72,9 +86,13 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_CENTER AS
     )IS
     BEGIN
         OPEN Op_medical_center FOR
-        SELECT medical_center_id, medical_center_name, location_id
-        FROM MEDICAL_CENTER
-        WHERE medical_center_id = Ip_medical_center_id;
+        SELECT /*+ INDEX( mc PK_MEDICAL_CENTER) */
+        medical_center_id, medical_center_name, location_id
+        FROM MEDICAL_CENTER mc
+        WHERE mc.medical_center_id = Ip_medical_center_id;
+    EXCEPTION
+         WHEN OTHERS THEN
+                RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
     END Proc_Get_MEDICAL_CENTER_BY_ID;
 
     PROCEDURE Proc_Get_MEDICAL_CENTER_BY_LOCATION(
@@ -83,8 +101,12 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_CENTER AS
     )IS
     BEGIN
         OPEN Op_medical_center FOR
-        SELECT medical_center_id, medical_center_name, location_id
-        FROM MEDICAL_CENTER
-        WHERE location_id = Ip_location_id;
+        SELECT /*+ INDEX( mc idx_medical_center_location*/
+        medical_center_id, medical_center_name, location_id
+        FROM MEDICAL_CENTER mc
+        WHERE mc.location_id = Ip_location_id;
+    EXCEPTION
+         WHEN OTHERS THEN
+                RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
     END Proc_Get_MEDICAL_CENTER_BY_LOCATION;
 END PCK_MEDICAL_CENTER;

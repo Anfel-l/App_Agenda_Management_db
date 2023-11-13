@@ -37,7 +37,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM IS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20001, 'Symptom already exists');
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Insert_SYMPTOM;
 
 
@@ -53,7 +57,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM IS
         WHERE symptom_id = Ip_symptom_id;
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE_APPLICATION_ERROR(-20003, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Update_SYMPTOM;
 
 
@@ -79,12 +87,12 @@ CREATE OR REPLACE PACKAGE BODY PCK_SYMPTOM IS
     ) IS
     BEGIN
         OPEN Op_symptom FOR
-        SELECT 
+        SELECT /*+ INDEX (s PK_SYMPTOM) */
             symptom_id, 
             symptom_name, 
             symptom_priority
-        FROM SYMPTOM
-        WHERE symptom_id = Ip_symptom_id;
+        FROM SYMPTOM s
+        WHERE s.symptom_id = Ip_symptom_id;
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20005, 'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);

@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE PCK_DOCTOR IS
+CREATE OR REPLACE PACKAGE MED_USER_DBA.PCK_DOCTOR IS
     PROCEDURE Proc_Insert_DOCTOR(
         Ip_first_name IN VARCHAR2,
         Ip_second_name IN VARCHAR2,
@@ -22,6 +22,11 @@ CREATE OR REPLACE PACKAGE PCK_DOCTOR IS
 
     PROCEDURE Proc_Get_DOCTOR_BY_ID(
         Ip_doctor_id IN NUMBER,
+        Op_doctor OUT SYS_REFCURSOR
+    );
+
+    PROCEDURE Proc_Get_DOCTOR_BY_MEDICAL_CENTER_ID(
+        Ip_medical_center_id IN NUMBER,
         Op_doctor OUT SYS_REFCURSOR
     );
 
@@ -106,20 +111,38 @@ CREATE OR REPLACE PACKAGE BODY PCK_DOCTOR AS
     ) IS
     BEGIN
         OPEN Op_doctor FOR
-            SELECT
+            SELECT /*+ INDEX(d PK_DOCTOR) */
                 doctor_id,
                 first_name,
                 second_name,
                 last_name,
                 medical_field_id,
                 medical_center_id
-            FROM DOCTOR
+            FROM DOCTOR d
             WHERE doctor_id = Ip_doctor_id; 
     EXCEPTION
         WHEN OTHERS THEN
             RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - ' || SQLCODE || ' - ERROR - ' ||SQLERRM);
     END Proc_Get_DOCTOR_BY_ID;
 
-    
-
+    PROCEDURE Proc_Get_DOCTOR_BY_MEDICAL_CENTER_ID(
+        Ip_medical_center_id IN NUMBER,
+        Op_doctor OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        OPEN Op_doctor FOR
+            SELECT /*+ INDEX(d idx_doctor_medical_center_id) */
+                doctor_id,
+                first_name,
+                second_name,
+                last_name,
+                medical_field_id,
+                medical_center_id
+            FROM DOCTOR d
+            WHERE d.medical_center_id = Ip_medical_center_id;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20002, 'An error was encountered - ' || SQLCODE || ' - ERROR - ' ||SQLERRM);
+    END Proc_Get_DOCTOR_BY_MEDICAL_CENTER_ID;
+   
 END PCK_DOCTOR;

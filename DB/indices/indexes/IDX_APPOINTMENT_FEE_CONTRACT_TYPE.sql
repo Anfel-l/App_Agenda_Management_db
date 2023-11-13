@@ -1,0 +1,1 @@
+CREATE INDEX idx_appointment_fee_contract_type_id ON MED_USER_DBA.APPOINTMENT_FEE(contract_type_id);

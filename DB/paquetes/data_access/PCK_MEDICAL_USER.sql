@@ -1,9 +1,4 @@
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_USER IS
-
-    PROCEDURE Proc_Insert_Medical_Users (
-        Ip_medical_users IN medical_user_tbl
-    );
-
     PROCEDURE Proc_Insert_MEDICAL_USER (
         Ip_first_name         IN  VARCHAR2,
         Ip_second_name        IN  VARCHAR2,
@@ -44,57 +39,8 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_USER IS
     );
 
 END PCK_MEDICAL_USER;
+
 CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
-
-    TYPE medical_user_rec IS RECORD (
-        first_name        VARCHAR2(255),
-        second_name       VARCHAR2(255),
-        last_name         VARCHAR2(255),
-        document_type_id  NUMBER,
-        document          VARCHAR2(255),
-        password          VARCHAR2(255),
-        contract_type_id  NUMBER,
-        location_id       NUMBER,
-        email             VARCHAR2(255)
-    );
-
-    TYPE medical_user_tbl IS TABLE OF medical_user_rec INDEX BY PLS_INTEGER;
-
-    PROCEDURE Proc_Insert_Medical_Users (Ip_medical_users IN medical_user_tbl) IS
-    BEGIN
-        FORALL i IN Ip_medical_users.FIRST .. Ip_medical_users.LAST
-            INSERT INTO MEDICAL_USER (
-                user_id,
-                first_name,
-                second_name,
-                last_name,
-                document_type_id,
-                document,
-                password,
-                contract_type_id,
-                location_id,
-                email
-            )
-            VALUES (
-                SEQ_MEDICAL_USER.NEXTVAL,
-                Ip_medical_users(i).first_name,
-                Ip_medical_users(i).second_name,
-                Ip_medical_users(i).last_name,
-                Ip_medical_users(i).document_type_id,
-                Ip_medical_users(i).document,
-                Ip_medical_users(i).password,
-                Ip_medical_users(i).contract_type_id,
-                Ip_medical_users(i).location_id,
-                Ip_medical_users(i).email
-            );
-    EXCEPTION
-        WHEN DUP_VAL_ON_INDEX THEN
-            RAISE_APPLICATION_ERROR(-20000, 'Error: Duplicated value on insert');
-        WHEN OTHERS THEN
-            RAISE;
-    END Proc_Insert_Medical_Users;
-
-
 
     PROCEDURE Proc_Insert_MEDICAL_USER (
         Ip_first_name         IN  VARCHAR2,
@@ -119,7 +65,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20000, 'Error: Duplicated value on insert');
         WHEN OTHERS THEN
-            RAISE;
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Insert_MEDICAL_USER;
 
     PROCEDURE Proc_Get_All_MEDICAL_USER (Op_medical_users OUT SYS_REFCURSOR) IS
@@ -137,6 +87,9 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
             location_id,
             email
         FROM MEDICAL_USER;
+    EXCEPTION
+         WHEN OTHERS THEN
+                RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
     END Proc_Get_All_MEDICAL_USER;
 
     PROCEDURE Proc_Get_MEDICAL_USER_BY_ID (
@@ -145,7 +98,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
     ) IS
     BEGIN
         OPEN Op_medical_user FOR
-        SELECT
+        SELECT /*+ INDEX(mu PK_MEDICAL_USER) */ 
             user_id,
         	first_name,
             second_name,
@@ -156,7 +109,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
             contract_type_id,
             location_id,
             email
-       	FROM MEDICAL_USER WHERE user_id = Ip_user_id;
+       	FROM MEDICAL_USER mu
+        WHERE mu.user_id = Ip_user_id;
+    EXCEPTION
+         WHEN OTHERS THEN
+                RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
     END Proc_Get_MEDICAL_USER_BY_ID;
 
     PROCEDURE Proc_Get_MEDICAL_USER_BY_DOCUMENT (
@@ -165,7 +122,7 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
     ) IS
     BEGIN
         OPEN Op_medical_user FOR
-        SELECT
+        SELECT /*+ INDEX(mu idx_medical_user_document) */
         	user_id,
         	first_name,
             second_name,
@@ -176,7 +133,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
             contract_type_id,
             location_id,
             email
-        FROM MEDICAL_USER WHERE document = Ip_document;
+        FROM MEDICAL_USER mu 
+        WHERE mu.document = Ip_document;
+    EXCEPTION
+         WHEN OTHERS THEN
+                RAISE_APPLICATION_ERROR(-20002,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
     END Proc_Get_MEDICAL_USER_BY_DOCUMENT;
 
     PROCEDURE Proc_Update_MEDICAL_USER (
@@ -207,7 +168,11 @@ CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_USER AS
         WHEN DUP_VAL_ON_INDEX THEN
             RAISE_APPLICATION_ERROR(-20000, 'Error: Duplicated value on update');
         WHEN OTHERS THEN
-            RAISE;
+        IF SQLCODE = -2291 THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Foreign key constraint violation.');
+        ELSE
+            RAISE_APPLICATION_ERROR(-20002, 'An unexpected error was encountered - ' || SQLCODE || ' - ERROR - ' || SQLERRM);
+        END IF;
     END Proc_Update_MEDICAL_USER;
 
 END PCK_MEDICAL_USER;

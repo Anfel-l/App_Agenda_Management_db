@@ -38,7 +38,6 @@ CREATE OR REPLACE PACKAGE BODY PCK_USER_LOGIN IS
             Op_UserId := NULL;
             Op_Result := 'User not found';
         END IF;
-
         CLOSE v_user_cursor;
 
     EXCEPTION
