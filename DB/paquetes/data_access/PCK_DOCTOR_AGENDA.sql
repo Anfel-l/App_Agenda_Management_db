@@ -1,19 +1,43 @@
+/*******************************************************************************
+Description: Creation script for tthe package PCK_DOCTOR_AGENDA
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_DOCTOR_AGENDA IS
     PROCEDURE Proc_Insert_DOCTOR_AGENDA (
         Ip_doctor_id IN NUMBER,
         Ip_detail_id IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_DOCTOR_AGENDA
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_DOCTOR_AGENDA (
         Ip_doctor_agenda_id IN NUMBER,
         Ip_doctor_id IN NUMBER,
         Ip_detail_id IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the table PROCEDURE Proc_Get_All_DOCTOR_AGENDA
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_DOCTOR_AGENDA (
         Op_doctor_agenda OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_DOCTOR_AGENDA_BY_DOCTOR_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_DOCTOR_AGENDA_BY_DOCTOR_ID(
         Ip_doctor_id IN NUMBER,
         Op_doctor_agenda OUT SYS_REFCURSOR

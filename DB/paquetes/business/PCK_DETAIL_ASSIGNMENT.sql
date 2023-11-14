@@ -1,4 +1,70 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_DETAIL_ASSIGNMENT declaration
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
+CREATE OR REPLACE PACKAGE MED_USER_DBA.PCK_DETAIL_ASSIGNMENT IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Calculate_Cuota
+    which calculates the appointment fee for a given user
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
+    PROCEDURE Proc_Calculate_Cuota(
+        Ip_user_id IN NUMBER,
+        Op_apppointment_fee_id OUT NOCOPY NUMBER
+    );
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Validate_Priority
+    which validates the priority of a given medical appointment
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
+    PROCEDURE Proc_Validate_Priority(
+        Ip_medical_appointment_id IN NUMBER,
+        Op_priority_value OUT NOCOPY DECIMAL
+    );
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Validate_Slot
+    which validates the slot_time for a given medical appointment
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
+    PROCEDURE Proc_Validate_Slot(
+        Ip_doctor_id IN NUMBER,
+        Ip_priority IN DECIMAL,
+        Op_slot_time OUT NOCOPY TIMESTAMP 
+    );
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Assign_Appointment
+    which assigns a medical appointment to a given user
+    
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
+    PROCEDURE Proc_Assign_Appointment(
+        Ip_user_id IN NUMBER,
+        Ip_medical_appointment_id IN NUMBER,
+        Ip_doctor_id IN NUMBER,
+        Op_detail OUT SYS_REFCURSOR
+    );
+END PCK_DETAIL_ASSIGNMENT;
+
+
 CREATE OR REPLACE PACKAGE BODY MED_USER_DBA.PCK_DETAIL_ASSIGNMENT AS
+
 	    PROCEDURE Proc_Calculate_Cuota(
 	        Ip_user_id IN NUMBER,
 	        Op_apppointment_fee_id OUT NOCOPY NUMBER

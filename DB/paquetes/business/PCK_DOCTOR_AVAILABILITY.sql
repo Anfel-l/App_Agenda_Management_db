@@ -1,9 +1,32 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_DOCTOR_AVAILABILITY
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_DOCTOR_AVAILABILITY IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_Doctor_Agenda
+    which returns the doctor with the least appointments
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_Doctor_Agenda(
         Ip_Doctor_Ids IN SYS_REFCURSOR,
         Op_Doctor_Id OUT NUMBER
     );
    	
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_Doctors_By_Appointment
+    which returns the doctor with the least appointments
+    
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_Doctors_By_Appointment(
         Ip_medical_appointment_id IN NUMBER,
         Ip_user_id IN NUMBER,

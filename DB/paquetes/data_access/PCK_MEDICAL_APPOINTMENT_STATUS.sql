@@ -1,18 +1,48 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_MEDICAL_APPOINTMENT_STATUS
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT_STATUS IS
 
+    /*******************************************************************************
+    Description: Creation script for procedure Proc_Insert_MEDICAL_APPOINTMENT_STATUS
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_MEDICAL_APPOINTMENT_STATUS(
         Ip_status IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_MEDICAL_APPOINTMENT_STATUS
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_MEDICAL_APPOINTMENT_STATUS(
         Ip_medical_appointment_status_id IN NUMBER,
         Ip_status IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_MEDICAL_APPOINTMENT_STATUS
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_MEDICAL_APPOINTMENT_STATUS(
         Op_medical_appointment_status OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_MEDICAL_APPOINTMENT_STATUS_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_MEDICAL_APPOINTMENT_STATUS_BY_ID(
         Ip_medical_appointment_status_id IN NUMBER,
         Op_medical_appointment_status OUT SYS_REFCURSOR

@@ -1,5 +1,17 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_MEDICAL_APPOINTMENT_DETAIL
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT_DETAIL IS
     
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_MEDICAL_APPOINTMENT_DETAIL
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/    
     PROCEDURE Proc_Insert_MEDICAL_APPOINTMENT_DETAIL(
         Ip_user_id IN NUMBER,
         Ip_doctor_id IN NUMBER,
@@ -10,6 +22,12 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT_DETAIL IS
         Op_detail_id OUT NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_MEDICAL_APPOINTMENT_DETAIL
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_MEDICAL_APPOINTMENT_DETAIL(
         Ip_detail_id IN NUMBER,
         Ip_user_id IN NUMBER,
@@ -20,10 +38,22 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT_DETAIL IS
         Ip_appointment_time IN TIMESTAMP
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_MEDICAL_APPOINTMENT_DETAIL
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_MEDICAL_APPOINTMENT_DETAIL(
         Op_medical_appointment_detail OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure PRoc_Get_MEDICAL_APPOINTMENT_DETAIL_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE PRoc_Get_MEDICAL_APPOINTMENT_DETAIL_BY_ID(
         Ip_detail_id IN NUMBER,
         Op_medical_appointment_detail OUT SYS_REFCURSOR

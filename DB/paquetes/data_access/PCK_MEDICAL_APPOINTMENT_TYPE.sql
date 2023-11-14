@@ -1,26 +1,57 @@
+/*******************************************************************************
+Description: Creation script for the procedure PCK_MEDICAL_APPOINTMENT_TYPE
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT_TYPE IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_MEDICAL_APPOINTMENT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_MEDICAL_APPOINTMENT_TYPE(
         Ip_medical_appointment_type_name IN VARCHAR2,
         Ip_description IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_MEDICAL_APPOINTMENT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_MEDICAL_APPOINTMENT_TYPE(
         Ip_medical_appointment_type_id IN NUMBER,
         Ip_medical_appointment_type_name IN VARCHAR2,
         Ip_description IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_MEDICAL_APPOINTMENT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_MEDICAL_APPOINTMENT_TYPE(
         Op_medical_appointment_type OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_MEDICAL_APPOINTMENT_TYPE_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_MEDICAL_APPOINTMENT_TYPE_BY_ID(
         Ip_medical_appointment_type_id IN NUMBER,
         Op_medical_appointment_type OUT SYS_REFCURSOR
     );
 END PCK_MEDICAL_APPOINTMENT_TYPE;
 
-CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT_TYPE AS
+CREATE OR REPLACE PACKAGE BODY PCK_MEDICAL_APPOINTMENT_TYPE AS  
     PROCEDURE Proc_Insert_MEDICAL_APPOINTMENT_TYPE(
         Ip_medical_appointment_type_name IN VARCHAR2,
         Ip_description IN VARCHAR2

@@ -1,4 +1,17 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_DOCTOR_SHIFT
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_DOCTOR_SHIFT IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_DOCTOR_SHIFT
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_DOCTOR_SHIFT(
         Ip_doctor_id IN NUMBER,
         Ip_shift_date IN DATE,
@@ -6,6 +19,12 @@ CREATE OR REPLACE PACKAGE PCK_DOCTOR_SHIFT IS
         Ip_end_time IN TIMESTAMP
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_DOCTOR_SHIFT
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_DOCTOR_SHIFT(
         Ip_doctor_shift_id IN NUMBER,
         Ip_doctor_id IN NUMBER,
@@ -14,10 +33,22 @@ CREATE OR REPLACE PACKAGE PCK_DOCTOR_SHIFT IS
         Ip_end_time IN TIMESTAMP
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_DOCTOR_SHIFT
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_DOCTOR_SHIFT(
         Op_doctor_shift OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_DOCTOR_SHIFT_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_DOCTOR_SHIFT_BY_ID(
         Ip_doctor_shift_id IN NUMBER,
         Op_doctor_shift OUT SYS_REFCURSOR

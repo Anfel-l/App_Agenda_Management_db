@@ -1,5 +1,19 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_APPOINTMENT_DETAILS declaration
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_APPOINTMENT_DETAILS IS
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Enter_Appointment_Details
+    which inserts a new appointment in the database
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Enter_Appointment_Details(
         Ip_User_Id IN NUMBER,
         Ip_MedicalAppointmentTypeId IN NUMBER,
@@ -8,6 +22,14 @@ CREATE OR REPLACE PACKAGE PCK_APPOINTMENT_DETAILS IS
         Op_Appointment OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Calculate_Priority
+    which calculates the priority of an appointment
+    
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Calculate_Priority(
         Ip_ContractTypeId IN NUMBER,
         Ip_SymptomId IN NUMBER,

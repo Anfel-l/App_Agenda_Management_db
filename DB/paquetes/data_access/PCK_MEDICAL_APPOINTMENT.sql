@@ -1,3 +1,9 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_MEDICAL_APPOINTMENT
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT IS
     PROCEDURE Proc_Insert_MEDICAL_APPOINTMENT(
         Ip_medical_appointment_type_id IN NUMBER,
@@ -8,6 +14,12 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT IS
 
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_MEDICAL_APPOINTMENT
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_MEDICAL_APPOINTMENT(
         Ip_medical_appointment_id IN NUMBER,
         Ip_medical_appointment_type_id IN NUMBER,
@@ -16,10 +28,22 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_APPOINTMENT IS
         Ip_medical_field_id IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_MEDICAL_APPOINTMENT
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_MEDICAL_APPOINTMENT(
         Op_medical_appointment OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_MEDICAL_APPOINTMENT_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_MEDICAL_APPOINTMENT_BY_ID(
         Ip_medical_appointment_id IN NUMBER,
         Op_medical_appointment OUT SYS_REFCURSOR

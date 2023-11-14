@@ -1,17 +1,48 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_LOCATION
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_LOCATION IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_LOCATION
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/    
     PROCEDURE Proc_Insert_LOCATION(
         ip_location_name IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_LOCATION
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_LOCATION(
         ip_location_id IN NUMBER,
         ip_location_name IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_LOCATION
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_LOCATION(
         Op_location OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_LOCATION_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_LOCATION_BY_ID(
         ip_location_id IN NUMBER,
         Op_location OUT SYS_REFCURSOR

@@ -1,20 +1,50 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_SYMPTOM
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_SYMPTOM IS
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_SYMPTOM
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_SYMPTOM(
         Ip_symptom_name IN VARCHAR2,
         Ip_symptom_priority IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_SYMPTOM
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_SYMPTOM(
         Ip_symptom_id IN NUMBER,
         Ip_symptom_name IN VARCHAR2,
         Ip_symptom_priority IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_SYMPTOM
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_SYMPTOM(
         Op_symptom OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_SYMPTOM_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_SYMPTOM_BY_ID(
         Ip_symptom_id IN NUMBER,
         Op_symptom OUT SYS_REFCURSOR

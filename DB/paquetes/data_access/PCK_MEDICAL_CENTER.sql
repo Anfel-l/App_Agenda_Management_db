@@ -1,24 +1,54 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_MEDICAL_CENTER
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_CENTER IS
     PROCEDURE Proc_Insert_MEDICAL_CENTER(
         Ip_medical_center_name IN VARCHAR2,
         Ip_location_id IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_MEDICAL_CENTER
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_MEDICAL_CENTER(
         Ip_medical_center_id IN NUMBER,
         Ip_medical_center_name IN VARCHAR2,
         Ip_location_id IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_MEDICAL_CENTER
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_MEDICAL_CENTER(
         Op_medical_center OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_MEDICAL_CENTER_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_MEDICAL_CENTER_BY_ID(
         Ip_medical_center_id IN NUMBER,
         Op_medical_center OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_MEDICAL_CENTER_BY_LOCATION
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_MEDICAL_CENTER_BY_LOCATION(
         Ip_location_id IN NUMBER,
         Op_medical_center OUT SYS_REFCURSOR

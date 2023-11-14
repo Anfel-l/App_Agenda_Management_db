@@ -1,21 +1,67 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_GET_DETAILS
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_GET_DETAILS IS
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_GET_USER_DETAILS
+    which returns the details of a user
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_GET_USER_DETAILS(
         Ip_user_id IN NUMBER,
         Op_details OUT SYS_REFCURSOR);
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_GET_APPOINTMENT_DETAILS
+    which returns the details of an appointment
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_GET_APPOINTMENT_DETAILS(
         Ip_appointment_id IN NUMBER,
         Op_details OUT SYS_REFCURSOR);
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_GET_APPOINTMENT_DETAIL_DETAILS
+    which returns the details of an appointment detail
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_GET_APPOINTMENT_DETAIL_DETAILS(
         Ip_appointment_detail_id IN NUMBER,
         Op_details OUT SYS_REFCURSOR);
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_GET_DOCTOR_DETAILS
+    which returns the details of a doctor
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_GET_DOCTOR_DETAILS(
         Ip_doctor_id IN NUMBER,
         Op_details OUT SYS_REFCURSOR);
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_GET_AGENDA_DETAILS
+    which returns the details of a doctor's agenda
+    
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_GET_AGENDA_DETAILS(
         Ip_doctor_id IN NUMBER,
         Op_agenda OUT SYS_REFCURSOR);

@@ -1,19 +1,50 @@
+/*******************************************************************************
+Description: Creation script for the procedure PCK_DOCUMENT_TYPE
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_DOCUMENT_TYPE IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_DOCUMENT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_DOCUMENT_TYPE(
         ip_document_type_abbreviation IN VARCHAR2,
         ip_description IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_DOCUMENT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_DOCUMENT_TYPE(
         ip_document_type_id IN NUMBER, 
         ip_document_type_abbreviation IN VARCHAR2,
         ip_description IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_DOCUMENT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_DOCUMENT_TYPE(
         Op_document_type OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_DOCUMENT_TYPE_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_DOCUMENT_TYPE_BY_ID(
         ip_document_type_id IN NUMBER,
         Op_document_type OUT SYS_REFCURSOR
@@ -22,7 +53,7 @@ END PCK_DOCUMENT_TYPE;
 
 CREATE OR REPLACE PACKAGE BODY PCK_DOCUMENT_TYPE AS
     PROCEDURE Proc_Insert_DOCUMENT_TYPE(
-        ip_document_type_abbreviation IN VARCHAR2,
+        ip_document_type_abbreviation IN VARCHAR2,  
         ip_description IN VARCHAR2
     ) IS
     v_document_type_id NUMBER; 

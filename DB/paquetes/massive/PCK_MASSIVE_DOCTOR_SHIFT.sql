@@ -1,4 +1,20 @@
+/*******************************************************************************
+Description: Creation script for the procedure Proc_Insert_Bulk_DOCTOR_SHIFT
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MASSIVE_DOCTOR_SHIFT IS
+
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_Bulk_DOCTOR_SHIFT
+    which inserts a list of DOCTOR_SHIFT records into the database.
+    
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_Bulk_DOCTOR_SHIFT(
         Ip_doctor_shifts IN T_DOCTOR_SHIFT_TAB
     );

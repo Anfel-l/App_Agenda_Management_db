@@ -1,5 +1,19 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_USER_LOCATION declaration
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_USER_LOCATION IS
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_Centers_By_User_Location
+    which returns the medical centers associated to a user location
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_Centers_By_User_Location(
         Ip_User_Id IN NUMBER,
         Op_MEDICAL_CENTERS OUT SYS_REFCURSOR

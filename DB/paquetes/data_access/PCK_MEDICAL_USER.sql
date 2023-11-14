@@ -1,4 +1,17 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_MEDICAL_USER
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_USER IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_MEDICAL_USER
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_MEDICAL_USER (
         Ip_first_name         IN  VARCHAR2,
         Ip_second_name        IN  VARCHAR2,
@@ -11,20 +24,44 @@ CREATE OR REPLACE PACKAGE PCK_MEDICAL_USER IS
         Ip_email              IN  VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_MEDICAL_USER
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_MEDICAL_USER (
         Op_medical_users OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_MEDICAL_USER_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_MEDICAL_USER_BY_ID (
         Ip_user_id       IN NUMBER,
         Op_medical_user  OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_MEDICAL_USER_BY_DOCUMENT
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_MEDICAL_USER_BY_DOCUMENT (
         Ip_document      IN  VARCHAR2,
         Op_medical_user  OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_MEDICAL_USER
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_MEDICAL_USER (
         Ip_user_id            IN  NUMBER,
         Ip_first_name         IN  VARCHAR2,

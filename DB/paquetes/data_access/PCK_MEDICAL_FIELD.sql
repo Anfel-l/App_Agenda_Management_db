@@ -1,20 +1,50 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_MEDICAL_FIELD
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MEDICAL_FIELD IS
-    
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_MEDICAL_FIELD
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/    
     PROCEDURE Proc_Insert_MEDICAL_FIELD(
         Ip_medical_field_name IN VARCHAR2,
         Ip_description IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_MEDICAL_FIELD
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_MEDICAL_FIELD(
         Ip_medical_field_id IN NUMBER,
         Ip_medical_field_name IN VARCHAR2,
         Ip_description IN VARCHAR2
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_MEDICAL_FIELD
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_MEDICAL_FIELD(
         Op_medical_field OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_MEDICAL_FIELD_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_MEDICAL_FIELD_BY_ID(
         Ip_medical_field_id IN NUMBER,
         Op_medical_field OUT SYS_REFCURSOR

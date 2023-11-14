@@ -1,10 +1,32 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_MASSIVE_DOCTOR_AGENDA
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_MASSIVE_DOCTOR_AGENDA AS
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_GET_DOCTOR_IDS
+    which returns the doctor ids
+
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_GET_DOCTOR_IDS(
         Ip_doctors IN SYS_REFCURSOR,
         Op_doctor_agenda OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_GET_AGENDA
+    which returns the agenda of all doctors
+    
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_GET_AGENDA(
         Op_agenda OUT SYS_REFCURSOR
     );

@@ -1,10 +1,29 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_CONTRACT_TYPE
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_CONTRACT_TYPE IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_CONTRACT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_CONTRACT_TYPE(
         Ip_contract_type_name IN VARCHAR2,
         Ip_description IN VARCHAR2,
         Ip_contract_type_priority IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_CONTRACT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_CONTRACT_TYPE(
         Ip_contract_type_id IN NUMBER,
         Ip_contract_type_name IN VARCHAR2,
@@ -13,10 +32,22 @@ CREATE OR REPLACE PACKAGE PCK_CONTRACT_TYPE IS
 
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_CONTRACT_TYPE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_CONTRACT_TYPE(
         Op_contract_type OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_CONTRACT_TYPE_BY_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_CONTRACT_TYPE_BY_ID(
         Ip_contract_type_id IN NUMBER,
         Op_contract_type OUT SYS_REFCURSOR

@@ -1,5 +1,19 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_USER_LOGIN declaration
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_USER_LOGIN AS
     
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_User_Login
+    which allows to validate the user's login
+    
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_User_Login(
         Ip_document_type_id IN NUMBER,
         Ip_Document IN VARCHAR2,

@@ -1,19 +1,50 @@
+/*******************************************************************************
+Description: Creation script for the package PCK_APPOINTMENT_FEE
+Author: Andrés Felipe Lugo Rodríguez
+Date: 17/10/2023
+@copyright: Seguros Bolívar
+*******************************************************************************/
 CREATE OR REPLACE PACKAGE PCK_APPOINTMENT_FEE IS
+
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Insert_APPOINTMENT_FEE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Insert_APPOINTMENT_FEE(
         Ip_contract_type_id IN NUMBER,
         Ip_fee_value IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Update_APPOINTMENT_FEE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Update_APPOINTMENT_FEE(
         Ip_appointment_fee_id IN NUMBER,
         Ip_contract_type_id IN NUMBER,
         Ip_fee_value IN NUMBER
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_All_APPOINTMENT_FEE
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_All_APPOINTMENT_FEE(
         Op_appointment_fee OUT SYS_REFCURSOR
     );
 
+    /*******************************************************************************
+    Description: Creation script for the procedure Proc_Get_APPOINTMENT_FEE_BY_CONTRACT_TYPE_ID
+    Author: Andrés Felipe Lugo Rodríguez
+    Date: 17/10/2023
+    @copyright: Seguros Bolívar
+    *******************************************************************************/
     PROCEDURE Proc_Get_APPOINTMENT_FEE_BY_CONTRACT_TYPE_ID(
         Ip_contract_type_id IN NUMBER,
         Op_appointment_fee OUT SYS_REFCURSOR
