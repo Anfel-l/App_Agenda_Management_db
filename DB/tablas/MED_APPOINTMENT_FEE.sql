@@ -20,3 +20,4 @@ COMMENT ON TABLE MED_USER_DBA.APPOINTMENT_FEE IS 'Table that stores the values o
 COMMENT ON COLUMN MED_USER_DBA.APPOINTMENT_FEE.APPOINTMENT_FEE_ID IS 'Primary key of the table';
 COMMENT ON COLUMN MED_USER_DBA.APPOINTMENT_FEE.CONTRACT_TYPE_ID IS 'Foreign key of the contract type table';
 COMMENT ON COLUMN MED_USER_DBA.APPOINTMENT_FEE.FEE_VALUE IS 'Value of the fee for the medical appointment type and contract type';
+
